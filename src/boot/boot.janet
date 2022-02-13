@@ -795,7 +795,7 @@
   (when (< lo hi)
     (def pivot
       (median-of-three (in a hi) (in a lo)
-                       (in a (math/floor (/ (+ lo hi) 2)))))
+                       (in a (floor (/ (+ lo hi) 2)))))
     (var left lo)
     (var right hi)
     (while true
@@ -1643,7 +1643,7 @@
   [n ind]
   (var i 0) (var nextn n)
   (def len (length ind))
-  (def ret (arr-new (math/ceil (/ len n))))
+  (def ret (arr-new (ceil (/ len n))))
   (def slicer (if (bytes? ind) string/slice tuple/slice))
   (while (<= nextn len)
     (arr<- ret (slicer ind i nextn))
@@ -2313,7 +2313,7 @@
    :relaxed 1
    :normal 2
    :strict 3
-   :all math/inf})
+   :all inf})
 
 (defn run-context
   ```
@@ -3714,7 +3714,7 @@
            (if (function? thunk)
              ((thunk) ;subargs)
              (error (get thunk :error)))
-           math/inf)
+           inf)
      "d" (fn [&] (set debug-flag true) 1)
      "w" (fn [i &] (set warn-level (get-lint-level i)) 2)
      "x" (fn [i &] (set error-level (get-lint-level i)) 2)

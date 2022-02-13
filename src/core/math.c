@@ -347,9 +347,80 @@ JANET_CORE_FN(janet_cfun_lcm, "(math/lcm x y)",
     return janet_wrap_number(janet_lcm(x, y));
 }
 
+static int matsurika_bitwise_or(int x, int y) {
+    return (x | y);
+}
+
+static int matsurika_bitwise_and(int x, int y) {
+    return (x & y);
+}
+
+static int matsurika_bitwise_xor(int x, int y) {
+    return (x ^ y);
+}
+
+static int matsurika_bitwise_flip(int x) {
+    return ~x;
+}
+
+JANET_CORE_FN(matsurika_cfun_bit_string, "(bit-str x)",
+              "Bit-string of x") {
+    janet_fixarity(argc, 1);
+    int32_t x = janet_getnumber(argv, 0);
+    uint8_t *buf = janet_string_begin(32);
+    
+    int bits = 32;
+    for (; bits--; x >>= 1) {
+        if (x & 1) {
+            buf[bits] = '1';
+        } else {
+            buf[bits] = '0';
+        }
+    }
+    
+    return janet_wrap_string(janet_string_end(buf));
+}
+
+JANET_CORE_FN(matsurika_cfun_bitwise_or, "(bit-or x y)",
+              "Bitwise or of x and y") {
+    janet_fixarity(argc, 2);
+    double x = janet_getnumber(argv, 0);
+    double y = janet_getnumber(argv, 1);
+    return janet_wrap_number(matsurika_bitwise_or(x, y));
+}
+
+JANET_CORE_FN(matsurika_cfun_bitwise_and, "(bit& x y)",
+              "Bitwise and of x and y") {
+    janet_fixarity(argc, 2);
+    double x = janet_getnumber(argv, 0);
+    double y = janet_getnumber(argv, 1);
+    return janet_wrap_number(matsurika_bitwise_and(x, y));
+}
+
+JANET_CORE_FN(matsurika_cfun_bitwise_xor, "(bit^ x y)",
+              "Bitwise xor of x and y") {
+    janet_fixarity(argc, 2);
+    double x = janet_getnumber(argv, 0);
+    double y = janet_getnumber(argv, 1);
+    return janet_wrap_number(matsurika_bitwise_xor(x, y));
+}
+
+JANET_CORE_FN(matsurika_cfun_bitwise_flip, "(bit-flip x y)",
+              "Flip bits of x") {
+    janet_fixarity(argc, 1);
+    double x = janet_getnumber(argv, 0);
+    return janet_wrap_number(matsurika_bitwise_flip(x));
+}
+
+
 /* Module entry point */
 void janet_lib_math(JanetTable *env) {
     JanetRegExt math_cfuns[] = {
+        JANET_CORE_REG("bit-str", matsurika_cfun_bit_string),
+        JANET_CORE_REG("bit-or", matsurika_cfun_bitwise_or),
+        JANET_CORE_REG("bit&", matsurika_cfun_bitwise_and),
+        JANET_CORE_REG("bit^", matsurika_cfun_bitwise_xor),
+        JANET_CORE_REG("bit-flip", matsurika_cfun_bitwise_flip),
         JANET_CORE_REG("not", janet_not),
         JANET_CORE_REG("random", janet_rand),
         JANET_CORE_REG("seedrandom", janet_srand),

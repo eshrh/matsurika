@@ -3,11 +3,19 @@
 #ifndef JANETCONF_H
 #define JANETCONF_H
 
+<<<<<<< HEAD
 #define JANET_VERSION_MAJOR 1
 #define JANET_VERSION_MINOR 21
 #define JANET_VERSION_PATCH 2
 #define JANET_VERSION_EXTRA ""
 #define JANET_VERSION "1.21.2"
+=======
+#define JANET_VERSION_MAJOR 0
+#define JANET_VERSION_MINOR 0
+#define JANET_VERSION_PATCH 0
+#define JANET_VERSION_EXTRA ""
+#define JANET_VERSION "MATSURIKA"
+>>>>>>> b34eebb0 (Conf changes)
 
 /* #define JANET_BUILD "local" */
 
@@ -26,13 +34,13 @@
 /* #define JANET_NO_PROCESSES */
 /* #define JANET_NO_ASSEMBLER */
 /* #define JANET_NO_PEG */
-/* #define JANET_NO_NET */
-/* #define JANET_NO_INT_TYPES */
-/* #define JANET_NO_EV */
+#define JANET_NO_NET
+#define JANET_NO_INT_TYPES
+#define JANET_NO_EV
 /* #define JANET_NO_REALPATH */
 /* #define JANET_NO_SYMLINKS */
 /* #define JANET_NO_UMASK */
-/* #define JANET_NO_THREADS */
+#define JANET_NO_THREADS
 
 /* Other settings */
 /* #define JANET_DEBUG */

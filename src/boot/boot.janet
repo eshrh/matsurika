@@ -26,7 +26,7 @@
           (do
             (if (= t :string)
               (set docstr ith)
-              (array/push modifiers ith))
+              (arr<- modifiers ith))
             (if (< i len) (recur (+ i 1)))))))
     (def start (fstart 0))
     (def args (in more start))
@@ -38,7 +38,7 @@
       (buffer/push-string buf " ")
       (buffer/format buf "%j" (in args index))
       (set index (+ index 1)))
-    (array/push modifiers (string buf ")\n\n" docstr))
+    (arr<- modifiers (string buf ")\n\n" docstr))
     # Build return value
     ~(def ,name ,;modifiers (fn ,name ,;(tuple/slice more start)))))
 
@@ -235,9 +235,9 @@
   (var accum @['do])
   (while (< i len)
     (def {i k (+ i 1) v} bindings)
-    (array/push accum (tuple 'def k v))
+    (arr<- accum (tuple 'def k v))
     (+= i 2))
-  (array/concat accum body)
+  (arr+ accum body)
   (tuple/slice accum 0))
 
 (defmacro try
@@ -309,7 +309,7 @@
   (def len (length syms))
   (def accum @[])
   (while (< i len)
-    (array/push accum (in syms i) [gensym])
+    (arr<- accum (in syms i) [gensym])
     (++ i))
   ~(let (,;accum) ,;body))
 
@@ -592,7 +592,7 @@
   See loop for details.`
   [head & body]
   (def $accum (gensym))
-  ~(do (def ,$accum @[]) (loop ,head (array/push ,$accum (do ,;body))) ,$accum))
+  ~(do (def ,$accum @[]) (loop ,head (arr<- ,$accum (do ,;body))) ,$accum))
 
 (defmacro generate
   `Create a generator expression using the loop syntax. Returns a fiber
@@ -830,7 +830,7 @@
   If a `before?` comparator function is provided, sorts elements using that,
   otherwise uses `<`.``
   [ind &opt before?]
-  (sort (array/slice ind) before?))
+  (sort (arr: ind) before?))
 
 (defn sorted-by
   ``Returns a new sorted array that compares elements by invoking
@@ -872,7 +872,7 @@
   [f init ind]
   (var res init)
   (def ret @[])
-  (each x ind (array/push ret (set res (f res x))))
+  (each x ind (arr<- ret (set res (f res x))))
   ret)
 
 (defn accumulate2
@@ -884,11 +884,11 @@
   (def ret @[])
   (if (= nil k) (break ret))
   (var res (in ind k))
-  (array/push ret res)
+  (arr<- ret res)
   (set k (next ind k))
   (while (not= nil k)
     (set res (f res (in ind k)))
-    (array/push ret res)
+    (arr<- ret res)
     (set k (next ind k)))
   ret)
 
@@ -901,14 +901,14 @@
   (def res @[])
   (def [i1 i2 i3 i4] inds)
   (case ninds
-    1 (each x i1 (array/push res (f x)))
+    1 (each x i1 (arr<- res (f x)))
     2 (do
         (var k1 nil)
         (var k2 nil)
         (while true
           (if (= nil (set k1 (next i1 k1))) (break))
           (if (= nil (set k2 (next i2 k2))) (break))
-          (array/push res (f (in i1 k1) (in i2 k2)))))
+          (arr<- res (f (in i1 k1) (in i2 k2)))))
     3 (do
         (var k1 nil)
         (var k2 nil)
@@ -917,7 +917,7 @@
           (if (= nil (set k1 (next i1 k1))) (break))
           (if (= nil (set k2 (next i2 k2))) (break))
           (if (= nil (set k3 (next i3 k3))) (break))
-          (array/push res (f (in i1 k1) (in i2 k2) (in i3 k3)))))
+          (arr<- res (f (in i1 k1) (in i2 k2) (in i3 k3)))))
     4 (do
         (var k1 nil)
         (var k2 nil)
@@ -928,9 +928,9 @@
           (if (= nil (set k2 (next i2 k2))) (break))
           (if (= nil (set k3 (next i3 k3))) (break))
           (if (= nil (set k4 (next i4 k4))) (break))
-          (array/push res (f (in i1 k1) (in i2 k2) (in i3 k3) (in i4 k4)))))
+          (arr<- res (f (in i1 k1) (in i2 k2) (in i3 k3) (in i4 k4)))))
     (do
-      (def iterkeys (array/new-filled ninds))
+      (def iterkeys (arr-new* ninds))
       (var done false)
       (def call-buffer @[])
       (while true
@@ -940,10 +940,10 @@
                     new-key (next ii old-key)]
                 (if (= nil new-key)
                   (do (set done true) (break))
-                  (do (set (iterkeys i) new-key) (array/push call-buffer (in ii new-key))))))
+                  (do (set (iterkeys i) new-key) (arr<- call-buffer (in ii new-key))))))
         (if done (break))
-        (array/push res (f ;call-buffer))
-        (array/clear call-buffer))))
+        (arr<- res (f ;call-buffer))
+        (arr_ call-buffer))))
   res)
 
 (defn mapcat
@@ -952,7 +952,7 @@
   [f ind]
   (def res @[])
   (each x ind
-    (array/concat res (f x)))
+    (arr+ res (f x)))
   res)
 
 (defn filter
@@ -962,7 +962,7 @@
   (def res @[])
   (each item ind
     (if (pred item)
-      (array/push res item)))
+      (arr<- res item)))
   res)
 
 (defn count
@@ -984,7 +984,7 @@
   (def res @[])
   (each item ind
     (if-let [y (pred item)]
-      (array/push res y)))
+      (arr<- res y)))
   res)
 
 (defn range
@@ -995,12 +995,12 @@
   (case (length args)
     1 (do
         (def [n] args)
-        (def arr (array/new n))
+        (def arr (arr-new n))
         (forv i 0 n (put arr i i))
         arr)
     2 (do
         (def [n m] args)
-        (def arr (array/new (- m n)))
+        (def arr (arr-new (- m n)))
         (forv i n m (put arr (- i n) i))
         arr)
     3 (do
@@ -1058,7 +1058,7 @@
   (when (> n 0)
     (var left n)
     (each x xs
-      (array/push res x)
+      (arr<- res x)
       (-- left)
       (if (= 0 left) (break))))
   res)
@@ -1068,7 +1068,7 @@
   (def res @[])
   (each x xs
     (if (pred x) (break))
-    (array/push res x))
+    (arr<- res x))
   res)
 
 (defn- slice-n
@@ -1143,7 +1143,7 @@
   (fn [& args]
     (def ret @[])
     (each f funs
-      (array/push ret (f ;args)))
+      (arr<- ret (f ;args)))
     (tuple/slice ret 0)))
 
 (defmacro juxt
@@ -1152,7 +1152,7 @@
   (def parts @['tuple])
   (def $args (gensym))
   (each f funs
-    (array/push parts (tuple apply f $args)))
+    (arr<- parts (tuple apply f $args)))
   (tuple 'fn (tuple '& $args) (tuple/slice parts 0)))
 
 (defmacro defdyn
@@ -1202,9 +1202,9 @@
   [x & forms]
   (defn fop [last n]
     (def [h t] (if (= :tuple (type n))
-                 (tuple (in n 0) (array/slice n 1))
+                 (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
-    (def parts (array/concat @[h last] t))
+    (def parts (arr+ @[h last] t))
     (tuple/slice parts 0))
   (reduce fop x forms))
 
@@ -1215,9 +1215,9 @@
   [x & forms]
   (defn fop [last n]
     (def [h t] (if (= :tuple (type n))
-                 (tuple (in n 0) (array/slice n 1))
+                 (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
-    (def parts (array/concat @[h] t @[last]))
+    (def parts (arr+ @[h] t @[last]))
     (tuple/slice parts 0))
   (reduce fop x forms))
 
@@ -1230,10 +1230,10 @@
   [x & forms]
   (defn fop [last n]
     (def [h t] (if (= :tuple (type n))
-                 (tuple (in n 0) (array/slice n 1))
+                 (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
     (def sym (gensym))
-    (def parts (array/concat @[h sym] t))
+    (def parts (arr+ @[h sym] t))
     ~(let [,sym ,last] (if ,sym ,(tuple/slice parts 0))))
   (reduce fop x forms))
 
@@ -1246,16 +1246,16 @@
   [x & forms]
   (defn fop [last n]
     (def [h t] (if (= :tuple (type n))
-                 (tuple (in n 0) (array/slice n 1))
+                 (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
     (def sym (gensym))
-    (def parts (array/concat @[h] t @[sym]))
+    (def parts (arr+ @[h] t @[sym]))
     ~(let [,sym ,last] (if ,sym ,(tuple/slice parts 0))))
   (reduce fop x forms))
 
 (defn- walk-ind [f form]
   (def ret @[])
-  (each x form (array/push ret (f x)))
+  (each x form (arr<- ret (f x)))
   ret)
 
 (defn- walk-dict [f form]
@@ -1389,9 +1389,9 @@
   [t]
   (def len (length t))
   (var n (- len 1))
-  (def ret (array/new len))
+  (def ret (arr-new len))
   (while (>= n 0)
-    (array/push ret (in t n))
+    (arr<- ret (in t n))
     (-- n))
   ret)
 
@@ -1508,7 +1508,7 @@
   (def arr @[])
   (var k (next x nil))
   (while (not= nil k)
-    (array/push arr k)
+    (arr<- arr k)
     (set k (next x k)))
   arr)
 
@@ -1518,7 +1518,7 @@
   (def arr @[])
   (var k (next x nil))
   (while (not= nil k)
-    (array/push arr (in x k))
+    (arr<- arr (in x k))
     (set k (next x k)))
   arr)
 
@@ -1528,7 +1528,7 @@
   (def arr @[])
   (var k (next x nil))
   (while (not= nil k)
-    (array/push arr (tuple k (in x k)))
+    (arr<- arr (tuple k (in x k)))
     (set k (next x k)))
   arr)
 
@@ -1550,7 +1550,7 @@
   (each x ind
     (def y (f x))
     (if-let [arr (get ret y)]
-      (array/push arr x)
+      (arr<- arr x)
       (put ret y @[x])))
   ret)
 
@@ -1566,9 +1566,9 @@
   (each x ind
     (def y (f x))
     (cond
-      is-new          (do (set is-new false) (set category y) (set span @[x]) (array/push ret span))
-      (= y category)  (array/push span x)
-      (do (set category y) (set span @[x]) (array/push ret span))))
+      is-new          (do (set is-new false) (set category y) (set span @[x]) (arr<- ret span))
+      (= y category)  (arr<- span x)
+      (do (set category y) (set span @[x]) (arr<- ret span))))
   ret)
 
 (defn interleave
@@ -1580,7 +1580,7 @@
     (def len (min ;(map length cols)))
     (loop [i :range [0 len]
            ci :range [0 ncol]]
-      (array/push res (in (in cols ci) i))))
+      (arr<- res (in (in cols ci) i))))
   res)
 
 (defn distinct
@@ -1588,7 +1588,7 @@
   [xs]
   (def ret @[])
   (def seen @{})
-  (each x xs (if (in seen x) nil (do (put seen x true) (array/push ret x))))
+  (each x xs (if (in seen x) nil (do (put seen x true) (arr<- ret x))))
   ret)
 
 (defn flatten-into
@@ -1598,7 +1598,7 @@
   (each x xs
     (if (indexed? x)
       (flatten-into into x)
-      (array/push into x)))
+      (arr<- into x)))
   into)
 
 (defn flatten
@@ -1612,7 +1612,7 @@
   like @[k v k v ...]. Returns a new array.`
   [dict]
   (def ret @[])
-  (loop [k :keys dict] (array/push ret k (in dict k)))
+  (loop [k :keys dict] (arr<- ret k (in dict k)))
   ret)
 
 (defn from-pairs
@@ -1629,11 +1629,11 @@
   sep. Returns a new array.`
   [sep ind]
   (def len (length ind))
-  (def ret (array/new (- (* 2 len) 1)))
+  (def ret (arr-new (- (* 2 len) 1)))
   (if (> len 0) (put ret 0 (in ind 0)))
   (var i 1)
   (while (< i len)
-    (array/push ret sep (in ind i))
+    (arr<- ret sep (in ind i))
     (++ i))
   ret)
 
@@ -1643,13 +1643,13 @@
   [n ind]
   (var i 0) (var nextn n)
   (def len (length ind))
-  (def ret (array/new (math/ceil (/ len n))))
+  (def ret (arr-new (math/ceil (/ len n))))
   (def slicer (if (bytes? ind) string/slice tuple/slice))
   (while (<= nextn len)
-    (array/push ret (slicer ind i nextn))
+    (arr<- ret (slicer ind i nextn))
     (set i nextn)
     (+= nextn n))
-  (if (not= i len) (array/push ret (slicer ind i)))
+  (if (not= i len) (arr<- ret (slicer ind i)))
   ret)
 
 ###
@@ -1734,14 +1734,14 @@
   # Keep an array for accumulating the compilation output
   (def x-sym (if (idempotent? x) x (gensym)))
   (def accum @[])
-  (if (not= x x-sym) (array/push accum ['def x-sym x]))
+  (if (not= x x-sym) (arr<- accum ['def x-sym x]))
 
   # Table of gensyms
   (def symbols @{[nil nil] x-sym})
   (def length-symbols @{})
 
-  (defn emit [x] (array/push accum x))
-  (defn emit-branch [condition result] (array/push accum :branch condition result))
+  (defn emit [x] (arr<- accum x))
+  (defn emit-branch [condition result] (arr<- accum :branch condition result))
 
   (defn get-sym
     [parent-sym key]
@@ -1771,7 +1771,7 @@
       # match local binding
       (= t :symbol)
       (if-let [x (in b2g pattern)]
-        (array/push x s)
+        (arr<- x s)
         (put b2g pattern @[s]))
 
       # match quoted literal
@@ -1817,18 +1817,18 @@
     (def t (type pattern))
     (def isarr (or (= t :array) (and (= t :tuple) (= (tuple/type pattern) :brackets))))
     (when isarr
-      (array/push anda (get-length-sym s))
+      (arr<- anda (get-length-sym s))
       (def pattern-len
         (if-let [ rest-idx (find-index (fn [x] (= x '&)) pattern) ]
           rest-idx
           (length pattern)))
-      (array/push anda [<= pattern-len (get-length-sym s)]))
+      (arr<- anda [<= pattern-len (get-length-sym s)]))
     (cond
 
       # match data structure template
       (or (= t :struct) (= t :table))
       (eachp [i sub-pattern] pattern
-        (array/push anda [not= nil (get-sym s i)])
+        (arr<- anda [not= nil (get-sym s i)])
         (visit-pattern-2 anda gun preds s i sub-pattern))
       
       isarr
@@ -1843,22 +1843,22 @@
 
       # match quoted literal
       (and (= t :tuple) (= 2 (length pattern)) (= 'quote (pattern 0)))
-      (array/push anda ['= s pattern])
+      (arr<- anda ['= s pattern])
 
       # match global unification
       (and (= t :tuple) (= 2 (length pattern)) (= '@ (pattern 0)))
       (if-let [x (in gun (pattern 1))]
-        (array/push x s)
+        (arr<- x s)
         (put gun (pattern 1) @[s]))
 
       # match predicated binding
       (and (= t :tuple) (>= (length pattern) 2))
       (do
-        (array/push preds ;(slice pattern 1))
+        (arr<- preds ;(slice pattern 1))
         (visit-pattern-2 anda gun preds parent-sym key (pattern 0)))
 
       # match literal
-      (array/push anda ['= s pattern])))
+      (arr<- anda ['= s pattern])))
 
   # Compile the patterns
   (each [pattern expression] patterns
@@ -1872,34 +1872,34 @@
     (def unify @[])
     (each syms b2g
       (when (< 1 (length syms))
-        (array/push unify [= ;syms])))
+        (arr<- unify [= ;syms])))
     # Global unification
     (eachp [binding syms] gun
-      (array/push unify [= binding ;syms]))
+      (arr<- unify [= binding ;syms]))
     (sort unify)
-    (array/concat anda unify)
+    (arr+ anda unify)
     # Final binding
     (def defs (seq [[k v] :in (sort (pairs b2g))] ['def k (first v)]))
     # Predicates
     (unless (empty? preds)
       (def pred-join ~(do ,;defs (and ,;preds)))
-      (array/push anda pred-join))
+      (arr<- anda pred-join))
     (emit-branch (tuple/slice anda) ['do ;defs expression]))
 
   # Expand branches
   (def stack @[else])
   (each el (reverse accum)
     (if (= :branch el)
-      (let [condition (array/pop stack)
-            truthy (array/pop stack)
+      (let [condition (arr-> stack)
+            truthy (arr-> stack)
             if-form ~(if ,condition ,truthy
                        ,(case (length stack)
                           0 nil
                           1 (stack 0)
                           ~(do ,;(reverse stack))))]
-        (array/remove stack 0 (length stack))
-        (array/push stack if-form))
-      (array/push stack el)))
+        (arr- stack 0 (length stack))
+        (arr<- stack if-form))
+      (arr<- stack el)))
 
   ~(do ,;(reverse stack)))
 
@@ -1924,7 +1924,7 @@
     (def l (if-not (= -1 l) l))
     (def c (if-not (= -1 c) c))
     (def msg (string/format fmt ;args))
-    (array/push lints [level l c msg]))
+    (arr<- lints [level l c msg]))
   nil)
 
 (defn macex1
@@ -1958,7 +1958,7 @@
     (def last (in t (- (length t) 1)))
     (def bound (in t 1))
     (tuple/slice
-      (array/concat
+      (arr+
         @[(in t 0) (expand-bindings bound)]
         (tuple/slice t 2 -2)
         @[(recur last)])))
@@ -2374,7 +2374,7 @@
     (def f
       (fiber/new
         (fn []
-          (array/clear lints)
+          (arr_ lints)
           (def res (compile source env where lints))
           (unless (empty? lints)
             # Convert lint levels to numbers.
@@ -2607,18 +2607,18 @@
     [pre]
     (or (find-index |(and (string? ($ 0)) (string/has-prefix? pre ($ 0))) module/paths) 0))
   (def all-index (find-prefix ".:all:"))
-  (array/insert module/paths all-index [(string ".:all:" ext) loader check-project-relative])
+  (arr! module/paths all-index [(string ".:all:" ext) loader check-project-relative])
   (def sys-index (find-prefix ":sys:"))
-  (array/insert module/paths sys-index [(string ":sys:/:all:" ext) loader check-is-dep])
+  (arr! module/paths sys-index [(string ":sys:/:all:" ext) loader check-is-dep])
   (def curall-index (find-prefix ":cur:/:all:"))
-  (array/insert module/paths curall-index [(string ":cur:/:all:" ext) loader check-relative])
+  (arr! module/paths curall-index [(string ":cur:/:all:" ext) loader check-relative])
   module/paths)
 
 (module/add-paths ":native:" :native)
 (module/add-paths "/init.janet" :source)
 (module/add-paths ".janet" :source)
 (module/add-paths ".jimage" :image)
-(array/insert module/paths 0 [(fn is-cached [path] (if (in module/cache path) path)) :preload check-not-relative])
+(arr! module/paths 0 [(fn is-cached [path] (if (in module/cache path) path)) :preload check-not-relative])
 
 # Version of fexists that works even with a reduced OS
 (defn- fexists
@@ -2839,7 +2839,7 @@
   [pred &opt env local]
   (default env (fiber/getenv (fiber/current)))
   (def envs @[])
-  (do (var e env) (while e (array/push envs e) (set e (table/getproto e)) (if local (break))))
+  (do (var e env) (while e (arr<- envs e) (set e (table/getproto e)) (if local (break))))
   (def ret-set @{})
   (loop [envi :in envs
          k :keys envi
@@ -2942,7 +2942,7 @@
   (defn getslice [from to]
     (def to (min to (length str)))
     (string/slice str from to))
-  (defn push [x] (array/push stack x))
+  (defn push [x] (arr<- stack x))
 
   (defn parse-list [bullet-check initial indent]
     (def temp-stack @[initial])
@@ -3005,7 +3005,7 @@
       (if-not has-color (+= token-length (length d)))
       (buffer/push token d))
     (defn endtoken []
-      (if (first token) (array/push tokens [(string token) token-length]))
+      (if (first token) (arr<- tokens [(string token) token-length]))
       (buffer/clear token)
       (set token-length 0))
     (forv i 0 (length line)
@@ -3708,7 +3708,7 @@
            2)
      "E" (fn E-switch [i &]
            (set no-file false)
-           (def subargs (array/slice args (+ i 2)))
+           (def subargs (arr: args (+ i 2)))
            (def src ~|,(parse (in args (+ i 1))))
            (def thunk (compile src))
            (if (function? thunk)
@@ -3732,7 +3732,7 @@
     (if (and handleopts (= "-" (string/slice arg 0 1)))
       (+= i (dohandler (string/slice arg 1) i))
       (do
-        (def subargs (array/slice args i))
+        (def subargs (arr: args i))
         (set no-file false)
         (if expect-image
           (do

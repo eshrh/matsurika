@@ -7,13 +7,13 @@
 ###
 ###
 
-(def defn :macro
+(def defun :macro
   ```
-  (defn name & more)
+  (defun name & more)
 
   Define a function. Equivalent to (def name (fn name [args] ...)).
   ```
-  (fn defn [name & more]
+  (fn defun [name & more]
     (def len (length more))
     (def modifiers @[])
     (var docstr "")
@@ -42,10 +42,10 @@
     # Build return value
     ~(def ,name ,;modifiers (fn ,name ,;(tuple/slice more start)))))
 
-(defn defmacro :macro
+(defun defmacro :macro
   "Define a macro."
   [name & more]
-  (apply defn name :macro more))
+  (apply defun name :macro more))
 
 (defmacro as-macro
   ``Use a function or macro literal `f` as a macro. This lets
@@ -58,12 +58,12 @@
 (defmacro defmacro-
   "Define a private macro that will not be exported."
   [name & more]
-  (apply defn name :macro :private more))
+  (apply defun name :macro :private more))
 
-(defmacro defn-
+(defmacro defun-
   "Define a private function that will not be exported."
   [name & more]
-  (apply defn name :private more))
+  (apply defun name :private more))
 
 (defmacro def-
   "Define a private value that will not be exported."
@@ -75,14 +75,14 @@
   [name & more]
   ~(var ,name :private ,;more))
 
-(defn defglobal
+(defun defglobal
   "Dynamically create a global def."
   [name value]
   (def name* (symbol name))
   (setdyn name* @{:value value})
   nil)
 
-(defn varglobal
+(defun varglobal
   "Dynamically create a global var."
   [name init]
   (def name* (symbol name))
@@ -90,38 +90,39 @@
   nil)
 
 # Basic predicates
-(defn nan? "Check if x is NaN" [x] (not= x x))
-(defn number? "Check if x is a number." [x] (= (type x) :number))
-(defn fiber? "Check if x is a fiber." [x] (= (type x) :fiber))
-(defn string? "Check if x is a string." [x] (= (type x) :string))
-(defn symbol? "Check if x is a symbol." [x] (= (type x) :symbol))
-(defn keyword? "Check if x is a keyword." [x] (= (type x) :keyword))
-(defn buffer? "Check if x is a buffer." [x] (= (type x) :buffer))
-(defn function? "Check if x is a function (not a cfunction)." [x]
+(defun nan? "Check if x is NaN" [x] (not= x x))
+(defun number? "Check if x is a number." [x] (= (type x) :number))
+(defun fiber? "Check if x is a fiber." [x] (= (type x) :fiber))
+(defun string? "Check if x is a string." [x] (= (type x) :string))
+(defun symbol? "Check if x is a symbol." [x] (= (type x) :symbol))
+(defun keyword? "Check if x is a keyword." [x] (= (type x) :keyword))
+(defun buffer? "Check if x is a buffer." [x] (= (type x) :buffer))
+(defun function? "Check if x is a function (not a cfunction)." [x]
   (= (type x) :function))
-(defn cfunction? "Check if x a cfunction." [x] (= (type x) :cfunction))
-(defn table? "Check if x a table." [x] (= (type x) :table))
-(defn struct? "Check if x a struct." [x] (= (type x) :struct))
-(defn array? "Check if x is an array." [x] (= (type x) :array))
-(defn tuple? "Check if x is a tuple." [x] (= (type x) :tuple))
-(defn boolean? "Check if x is a boolean." [x] (= (type x) :boolean))
-(defn bytes? "Check if x is a string, symbol, keyword, or buffer." [x]
+(defun cfunction? "Check if x a cfunction." [x] (= (type x) :cfunction))
+(defun table? "Check if x a table." [x] (= (type x) :table))
+(defun struct? "Check if x a struct." [x] (= (type x) :struct))
+(defun array? "Check if x is an array." [x] (= (type x) :array))
+(defun tuple? "Check if x is a tuple." [x] (= (type x) :tuple))
+(defun boolean? "Check if x is a boolean." [x] (= (type x) :boolean))
+(defun bytes? "Check if x is a string, symbol, keyword, or buffer." [x]
   (def t (type x))
   (if (= t :string) true (if (= t :symbol) true (if (= t :keyword) true (= t :buffer)))))
-(defn dictionary? "Check if x is a table or struct." [x]
+(defun dictionary? "Check if x is a table or struct." [x]
   (def t (type x))
   (if (= t :table) true (= t :struct)))
-(defn indexed? "Check if x is an array or tuple." [x]
+(defun indexed? "Check if x is an array or tuple." [x]
   (def t (type x))
   (if (= t :array) true (= t :tuple)))
-(defn truthy? "Check if x is truthy." [x] (if x true false))
-(defn true? "Check if x is true." [x] (= x true))
-(defn false? "Check if x is false." [x] (= x false))
-(defn nil? "Check if x is nil." [x] (= x nil))
-(defn empty? "Check if xs is empty." [xs] (= nil (next xs nil)))
+(defun truthy? "Check if x is truthy." [x] (if x true false))
+(defun true? "Check if x is true." [x] (= x true))
+(defun false? "Check if x is false." [x] (= x false))
+(defun nil? "Check if x is nil." [x] (= x nil))
+(defun empty? "Check if xs is empty." [xs] (= nil (next xs nil)))
+(defun hasone? "Check if xs has exactly on element" [xs] (= 1 (length xs)))
 
-# For macros, we define an imcomplete odd? function that will be overriden.
-(defn odd? [x] (= 1 (mod x 2)))
+# For macros, we define an incomplete odd? function that will be overriden.
+(defun odd? [x] (= 1 (mod x 2)))
 
 (def idempotent?
   ```
@@ -139,8 +140,8 @@
     (fn idempotent? [x] (not (in non-atomic-types (type x))))))
 
 # C style macros and functions for imperative sugar. No bitwise though.
-(defn inc "Returns x + 1." [x] (+ x 1))
-(defn dec "Returns x - 1." [x] (- x 1))
+(defun inc "Returns x + 1." [x] (+ x 1))
+(defun dec "Returns x - 1." [x] (- x 1))
 (defmacro ++ "Increments the var x by 1." [x] ~(set ,x (,+ ,x ,1)))
 (defmacro -- "Decrements the var x by 1." [x] ~(set ,x (,- ,x ,1)))
 (defmacro += "Increments the var x by n." [x n] ~(set ,x (,+ ,x ,n)))
@@ -159,7 +160,7 @@
        ,v
        (,error ,(if err err "assert failure")))))
 
-(defn errorf
+(defun errorf
   "A combination of error and string/format. Equivalent to (error (string/format fmt ;args))"
   [fmt & args]
   (error (string/format fmt ;args)))
@@ -195,7 +196,7 @@
   odd number of forms, and no forms are matched, the last expression
   is executed. If there are no matches, return nil.`
   [& pairs]
-  (defn aux [i]
+  (defun aux [i]
     (def restlen (- (length pairs) i))
     (if (= restlen 0) nil
       (if (= restlen 1) (in pairs i)
@@ -211,7 +212,7 @@
   [dispatch & pairs]
   (def atm (idempotent? dispatch))
   (def sym (if atm dispatch (gensym)))
-  (defn aux [i]
+  (defun aux [i]
     (def restlen (- (length pairs) i))
     (if (= restlen 0) nil
       (if (= restlen 1) (in pairs i)
@@ -366,7 +367,7 @@
      (def ,name @"")
      ,(apply prompt name body)))
 
-(defn return
+(defun return
   "Return to a prompt point."
   [to &opt value]
   (signal 0 [to value]))
@@ -397,7 +398,7 @@
      ,(apply defer [(or dtor :close) binding] [truthy])
      ,falsey))
 
-(defn- for-var-template
+(defun- for-var-template
   [i start stop step comparison delta body]
   (with-syms [s]
     (def st (if (idempotent? step) step (gensym)))
@@ -413,23 +414,23 @@
           loop-body
           ~(if (,> ,st 0) ,loop-body)))))
 
-(defn- for-template
+(defun- for-template
   [binding start stop step comparison delta body]
   (def i (gensym))
   (for-var-template i start stop step comparison delta
                     [~(def ,binding ,i) ;body]))
 
-(defn- check-indexed [x]
+(defun- check-indexed [x]
   (if (indexed? x)
     x
     (error (string "expected tuple for range, got " x))))
 
-(defn- range-template
+(defun- range-template
   [binding object rest op comparison]
   (let [[start stop step] (check-indexed object)]
     (for-template binding start stop (or step 1) comparison op [rest])))
 
-(defn- each-template
+(defun- each-template
   [binding inx kind body]
   (with-syms [k]
     (def ds (if (idempotent? inx) inx (gensym)))
@@ -445,7 +446,7 @@
          ,;body
          (set ,k (,next ,ds ,k))))))
 
-(defn- iterate-template
+(defun- iterate-template
   [binding expr body]
   (with-syms [i]
     ~(do
@@ -454,7 +455,7 @@
          (def ,binding ,i)
          ,body))))
 
-(defn- loop1
+(defun- loop1
   [body head i]
 
   # Terminate recursion
@@ -610,19 +611,19 @@
   [flags & body]
   (tuple fiber/new (tuple 'fn '[] ;body) flags))
 
-(defn sum
+(defun sum
   "Returns the sum of xs. If xs is empty, returns 0."
   [xs]
   (var accum 0)
   (each x xs (+= accum x))
   accum)
 
-(defn mean
+(defun mean
   "Returns the mean of xs. If empty, returns NaN."
   [xs]
   (/ (sum xs) (length xs)))
 
-(defn product
+(defun product
   "Returns the product of xs. If xs is empty, returns 1."
   [xs]
   (var accum 1)
@@ -637,7 +638,7 @@
   (def len (length bindings))
   (if (= 0 len) (error "expected at least 1 binding"))
   (if (odd? len) (error "expected an even number of bindings"))
-  (defn aux [i]
+  (defun aux [i]
     (if (>= i len)
       tru
       (do
@@ -665,7 +666,7 @@
   [bindings & body]
   ~(if-let ,bindings (do ,;body)))
 
-(defn comp
+(defun comp
   `Takes multiple functions and returns a function that is the composition
   of those functions.`
   [& functions]
@@ -679,17 +680,17 @@
       (comp (fn [x] (f (g (h (i x)))))
             ;(tuple/slice functions 4 -1)))))
 
-(defn identity
+(defun identity
   "A function that returns its argument."
   [x]
   x)
 
-(defn complement
+(defun complement
   "Returns a function that is the complement to the argument."
   [f]
   (fn [x] (not (f x))))
 
-(defn extreme
+(defun extreme
   `Returns the most extreme value in args based on the function order.
   order should take two values and return true or false (a comparison).
   Returns nil if args is empty.`
@@ -698,35 +699,35 @@
   (each x args (if (order x ret) (set ret x)))
   ret)
 
-(defn max
+(defun max
   "Returns the numeric maximum of the arguments."
   [& args] (extreme > args))
 
-(defn min
+(defun min
   "Returns the numeric minimum of the arguments."
   [& args] (extreme < args))
 
-(defn max-of
+(defun max-of
   "Returns the numeric maximum of the argument sequence."
   [args] (extreme > args))
 
-(defn min-of
+(defun min-of
   "Returns the numeric minimum of the argument sequence."
   [args] (extreme < args))
 
-(defn first
+(defun first
   "Get the first element from an indexed data structure."
   [xs]
   (get xs 0))
 
-(defn last
+(defun last
   "Get the last element from an indexed data structure."
   [xs]
   (get xs (- (length xs) 1)))
 
 ## Polymorphic comparisons
 
-(defn compare
+(defun compare
   ``Polymorphic compare. Returns -1, 0, 1 for x < y, x = y, x > y respectively.
   Differs from the primitive comparators in that it first checks to
   see whether either x or y implement a `compare` method which can
@@ -738,7 +739,7 @@
     (when-let [f (get y :compare)] (- (f y x)))
     (cmp x y)))
 
-(defn- compare-reduce [op xs]
+(defun- compare-reduce [op xs]
   (var r true)
   (loop [i :range [0 (- (length xs) 1)]
          :let [c (compare (xs i) (xs (+ i 1)))
@@ -748,37 +749,37 @@
     (break))
   r)
 
-(defn compare=
+(defun compare=
   ``Equivalent of `=` but using polymorphic `compare` instead of primitive comparator.``
   [& xs]
   (compare-reduce = xs))
 
-(defn compare<
+(defun compare<
   ``Equivalent of `<` but using polymorphic `compare` instead of primitive comparator.``
   [& xs]
   (compare-reduce < xs))
 
-(defn compare<=
+(defun compare<=
   ``Equivalent of `<=` but using polymorphic `compare` instead of primitive comparator.``
   [& xs]
   (compare-reduce <= xs))
 
-(defn compare>
+(defun compare>
   ``Equivalent of `>` but using polymorphic `compare` instead of primitive comparator.``
   [& xs]
   (compare-reduce > xs))
 
-(defn compare>=
+(defun compare>=
   ``Equivalent of `>=` but using polymorphic `compare` instead of primitive comparator.``
   [& xs]
   (compare-reduce >= xs))
 
-(defn zero? "Check if x is zero." [x] (= (compare x 0) 0))
-(defn pos? "Check if x is greater than 0." [x] (= (compare x 0) 1))
-(defn neg? "Check if x is less than 0." [x] (= (compare x 0) -1))
-(defn one? "Check if x is equal to 1." [x] (= (compare x 1) 0))
-(defn even? "Check if x is even." [x] (= 0 (compare 0 (mod x 2))))
-(defn odd? "Check if x is odd." [x] (= 0 (compare 1 (mod x 2))))
+(defun zero? "Check if x is zero." [x] (= (compare x 0) 0))
+(defun pos? "Check if x is greater than 0." [x] (= (compare x 0) 1))
+(defun neg? "Check if x is less than 0." [x] (= (compare x 0) -1))
+(defun one? "Check if x is equal to 1." [x] (= (compare x 1) 0))
+(defun even? "Check if x is even." [x] (= 0 (compare 0 (mod x 2))))
+(defun odd? "Check if x is odd." [x] (= 0 (compare 1 (mod x 2))))
 
 ###
 ###
@@ -786,12 +787,12 @@
 ###
 ###
 
-(defn- median-of-three [a b c]
+(defun- median-of-three [a b c]
   (if (not= (> a b) (> a c))
     a
     (if (not= (> b a) (> b c)) b c)))
 
-(defn- sort-help [a lo hi before?]
+(defun- sort-help [a lo hi before?]
   (when (< lo hi)
     (def pivot
       (median-of-three (in a hi) (in a lo)
@@ -812,33 +813,33 @@
     (sort-help a left hi before?))
   a)
 
-(defn sort
+(defun sort
   ``Sort `ind` in-place, and return it. Uses quick-sort and is not a stable sort.
   If a `before?` comparator function is provided, sorts elements using that,
   otherwise uses `<`.``
   [ind &opt before?]
   (sort-help ind 0 (- (length ind) 1) (or before? <)))
 
-(defn sort-by
+(defun sort-by
   ``Returns `ind` sorted by calling
   a function `f` on each element and comparing the result with `<`.``
   [f ind]
   (sort ind (fn [x y] (< (f x) (f y)))))
 
-(defn sorted
+(defun sorted
   ``Returns a new sorted array without modifying the old one.
   If a `before?` comparator function is provided, sorts elements using that,
   otherwise uses `<`.``
   [ind &opt before?]
   (sort (arr: ind) before?))
 
-(defn sorted-by
+(defun sorted-by
   ``Returns a new sorted array that compares elements by invoking
   a function `f` on each element and comparing the result with `<`.``
   [f ind]
   (sorted ind (fn [x y] (< (f x) (f y)))))
 
-(defn reduce
+(defun reduce
   `Reduce, also know as fold-left in many languages, transforms
   an indexed type (array, tuple) with a function to produce a value by applying f to
   each element in order. f is a function of 2 arguments, (f accum el), where
@@ -850,7 +851,7 @@
   (each el ind (set accum (f accum el)))
   accum)
 
-(defn reduce2
+(defun reduce2
   `The 2-argument version of reduce that does not take an initialization value.
   Instead, the first element of the array is used for initialization.`
   [f ind]
@@ -863,7 +864,7 @@
     (set k (next ind k)))
   res)
 
-(defn accumulate
+(defun accumulate
   `Similar to reduce, but accumulates intermediate values into an array.
   The last element in the array is what would be the return value from reduce.
   The init value is not added to the array (the return value will have the same
@@ -875,7 +876,7 @@
   (each x ind (arr<- ret (set res (f res x))))
   ret)
 
-(defn accumulate2
+(defun accumulate2
   `The 2-argument version of accumulate that does not take an initialization value.
   The first value in ind will be added to the array as is, so the length of the
   return value will be (length ind).`
@@ -892,7 +893,7 @@
     (set k (next ind k)))
   ret)
 
-(defn map
+(defun map
   `Map a function over every value in a data structure and
   return an array of the results.`
   [f & inds]
@@ -946,7 +947,7 @@
         (arr_ call-buffer))))
   res)
 
-(defn mapcat
+(defun mapcat
   `Map a function over every element in an array or tuple and
   use array to concatenate the results.`
   [f ind]
@@ -955,7 +956,7 @@
     (arr+ res (f x)))
   res)
 
-(defn filter
+(defun filter
   `Given a predicate, take only elements from an array or tuple for
   which (pred element) is truthy. Returns a new array.`
   [pred ind]
@@ -965,7 +966,7 @@
       (arr<- res item)))
   res)
 
-(defn count
+(defun count
   `Count the number of items in ind for which (pred item)
   is true.`
   [pred ind]
@@ -975,7 +976,7 @@
       (++ counter)))
   counter)
 
-(defn keep
+(defun keep
   ``Given a predicate `pred`, return a new array containing the truthy results
   of applying `pred` to each element in the indexed collection `ind`. This is
   different from `filter` which returns an array of the original elements where
@@ -987,7 +988,7 @@
       (arr<- res y)))
   res)
 
-(defn range
+(defun range
   `Create an array of values [start, end) with a given step.
   With one argument returns a range [0, end). With two arguments, returns
   a range [start, end). With three, returns a range with optional step size.`
@@ -1011,7 +1012,7 @@
           (seq [i :range [n m s]] i)))
     (error "expected 1 to 3 arguments to range")))
 
-(defn find-index
+(defun find-index
   `Find the index of indexed type for which pred is true. Returns dflt if not found.`
   [pred ind &opt dflt]
   (var k nil)
@@ -1025,7 +1026,7 @@
       (break)))
   ret)
 
-(defn find
+(defun find
   `Find the first value in an indexed collection that satisfies a predicate. Returns
   dflt if not found.`
   [pred ind &opt dflt]
@@ -1040,7 +1041,7 @@
       (break)))
   ret)
 
-(defn index-of
+(defun index-of
   `Find the first key associated with a value x in a data structure, acting like a reverse lookup.
   Will not look at table prototypes.
   Returns dflt if not found.`
@@ -1052,7 +1053,7 @@
     (set k (next ind k)))
   ret)
 
-(defn- take-n-fallback
+(defun- take-n-fallback
   [n xs]
   (def res @[])
   (when (> n 0)
@@ -1063,7 +1064,7 @@
       (if (= 0 left) (break))))
   res)
 
-(defn- take-until-fallback
+(defun- take-until-fallback
   [pred xs]
   (def res @[])
   (each x xs
@@ -1071,7 +1072,7 @@
     (arr<- res x))
   res)
 
-(defn- slice-n
+(defun- slice-n
   [f n ind]
   (def len (length ind))
   # make sure end is in [0, len]
@@ -1079,7 +1080,7 @@
   (def end (if (> m len) len m))
   (f ind 0 end))
 
-(defn take
+(defun take
   "Take the first n elements of a fiber, indexed or bytes type. Returns a new array, tuple or string, respectively."
   [n ind]
   (cond
@@ -1087,14 +1088,14 @@
     (indexed? ind) (slice-n tuple/slice n ind)
     (take-n-fallback n ind)))
 
-(defn- slice-until
+(defun- slice-until
   [f pred ind]
   (def len (length ind))
   (def i (find-index pred ind))
   (def end (if (nil? i) len i))
   (f ind 0 end))
 
-(defn take-until
+(defun take-until
   "Same as `(take-while (complement pred) ind)`."
   [pred ind]
   (cond
@@ -1102,13 +1103,13 @@
     (indexed? ind) (slice-until tuple/slice pred ind)
     (take-until-fallback pred ind)))
 
-(defn take-while
+(defun take-while
   `Given a predicate, take only elements from a fiber, indexed or bytes type that satisfy
   the predicate, and abort on first failure. Returns a new array, tuple or string, respectively.`
   [pred ind]
   (take-until (complement pred) ind))
 
-(defn drop
+(defun drop
   ``Drop the first n elements in an indexed or bytes type. Returns a new tuple or string
   instance, respectively.``
   [n ind]
@@ -1120,7 +1121,7 @@
   (def start (if (> m len) len m))
   (f ind start -1))
 
-(defn drop-until
+(defun drop-until
   "Same as `(drop-while (complement pred) ind)`."
   [pred ind]
   (def use-str (bytes? ind))
@@ -1130,13 +1131,13 @@
   (def start (if (nil? i) len i))
   (f ind start))
 
-(defn drop-while
+(defun drop-while
   `Given a predicate, remove elements from an indexed or bytes type that satisfy
   the predicate, and abort on first failure. Returns a new tuple or string, respectively.`
   [pred ind]
   (drop-until (complement pred) ind))
 
-(defn juxt*
+(defun juxt*
   `Returns the juxtaposition of functions. In other words,
   ((juxt* a b c) x) evaluates to [(a x) (b x) (c x)].`
   [& funs]
@@ -1200,7 +1201,7 @@
   in forms, and inserts the modified first form into the second form
   in the same manner, and so on. Useful for expressing pipelines of data.`
   [x & forms]
-  (defn fop [last n]
+  (defun fop [last n]
     (def [h t] (if (= :tuple (type n))
                  (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
@@ -1213,7 +1214,7 @@
   in forms, and inserts the modified first form into the second form
   in the same manner, and so on. Useful for expressing pipelines of data.`
   [x & forms]
-  (defn fop [last n]
+  (defun fop [last n]
     (def [h t] (if (= :tuple (type n))
                  (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
@@ -1228,7 +1229,7 @@
   if an intermediate value is nil.
   Useful for expressing pipelines of data.`
   [x & forms]
-  (defn fop [last n]
+  (defun fop [last n]
     (def [h t] (if (= :tuple (type n))
                  (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
@@ -1244,7 +1245,7 @@
   if an intermediate value is nil.
   Useful for expressing pipelines of data.`
   [x & forms]
-  (defn fop [last n]
+  (defun fop [last n]
     (def [h t] (if (= :tuple (type n))
                  (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
@@ -1253,18 +1254,18 @@
     ~(let [,sym ,last] (if ,sym ,(tuple/slice parts 0))))
   (reduce fop x forms))
 
-(defn- walk-ind [f form]
+(defun- walk-ind [f form]
   (def ret @[])
   (each x form (arr<- ret (f x)))
   ret)
 
-(defn- walk-dict [f form]
+(defun- walk-dict [f form]
   (def ret @{})
   (loop [k :keys form]
     (put ret (f k) (f (in form k))))
   ret)
 
-(defn walk
+(defun walk
   `Iterate over the values in ast and apply f
   to them. Collect the results in a data structure. If ast is not a
   table, struct, array, or tuple,
@@ -1280,13 +1281,13 @@
                (tuple/brackets ;x)))
     form))
 
-(defn postwalk
+(defun postwalk
   `Do a post-order traversal of a data structure and call (f x)
   on every visitation.`
   [f form]
   (f (walk (fn [x] (postwalk f x)) form)))
 
-(defn prewalk
+(defun prewalk
   "Similar to postwalk, but do pre-order traversal."
   [f form]
   (walk (fn [x] (prewalk f x)) (f form)))
@@ -1345,13 +1346,13 @@
        ,;restoreold
        (if (= (,fiber/status ,f) :dead) ,ret (,propagate ,ret ,f)))))
 
-(defn partial
+(defun partial
   "Partial function application."
   [f & more]
   (if (zero? (length more)) f
     (fn [& r] (f ;more ;r))))
 
-(defn every?
+(defun every?
   `Returns true if each value in is truthy, otherwise the first
   falsey value.`
   [ind]
@@ -1360,7 +1361,7 @@
     (if x nil (set res x)))
   res)
 
-(defn any?
+(defun any?
   `Returns the first truthy value in ind, otherwise nil.
   falsey value.`
   [ind]
@@ -1369,7 +1370,7 @@
     (if x (set res x)))
   res)
 
-(defn reverse!
+(defun reverse!
   `Reverses the order of the elements in a given array or buffer and returns it
   mutated.`
   [t]
@@ -1383,7 +1384,7 @@
     (put t j l))
   t)
 
-(defn reverse
+(defun reverse
   `Reverses the order of the elements in a given array or tuple and returns
   a new array. If string or buffer is provided function returns array of chars reversed.`
   [t]
@@ -1395,7 +1396,7 @@
     (-- n))
   ret)
 
-(defn invert
+(defun invert
   ``Returns a table where the keys of an associative data structure
   are the values, and the values are the keys. If multiple keys in `ds`
   are mapped to the same value, only one of those values will
@@ -1406,7 +1407,7 @@
     (put ret (in ds k) k))
   ret)
 
-(defn zipcoll
+(defun zipcoll
   `Creates a table from two arrays/tuples.
   Returns a new table.`
   [ks vs]
@@ -1421,7 +1422,7 @@
     (put res (in ks kk) (in vs vk)))
   res)
 
-(defn get-in
+(defun get-in
   `Access a value in a nested data structure. Looks into the data structure via
   a sequence of keys.`
   [ds ks &opt dflt]
@@ -1429,7 +1430,7 @@
   (loop [k :in ks :while (not (nil? d))] (set d (get d k)))
   (if (= nil d) dflt d))
 
-(defn update-in
+(defun update-in
   `Update a value in a nested data structure by applying f to the current value.
   Looks into the data structure via
   a sequence of keys. Missing data structures will be replaced with tables. Returns
@@ -1451,7 +1452,7 @@
   (put d last-key (f last-val ;args))
   ds)
 
-(defn put-in
+(defun put-in
   `Put a value into a nested data structure.
   Looks into the data structure via
   a sequence of keys. Missing data structures will be replaced with tables. Returns
@@ -1473,7 +1474,7 @@
   (put d last-key v)
   ds)
 
-(defn update
+(defun update
   ``Accepts a key argument and passes its associated value to a function.
   The key is then re-associated to the function's return value. Returns the updated
   data structure `ds`.``
@@ -1481,7 +1482,7 @@
   (def old (get ds key))
   (put ds key (func old ;args)))
 
-(defn merge-into
+(defun merge-into
   "Merges multiple tables/structs into a table. If a key appears in more than one
   collection, then later values replace any previous ones.
   Returns the original table."
@@ -1491,7 +1492,7 @@
     (put tab key (in c key)))
   tab)
 
-(defn merge
+(defun merge
   `Merges multiple tables/structs to one. If a key appears in more than one
   collection, then later values replace any previous ones.
   Returns a new table.`
@@ -1502,7 +1503,7 @@
     (put container key (in c key)))
   container)
 
-(defn keys
+(defun keys
   "Get the keys of an associative data structure."
   [x]
   (def arr @[])
@@ -1512,7 +1513,7 @@
     (set k (next x k)))
   arr)
 
-(defn values
+(defun values
   "Get the values of an associative data structure."
   [x]
   (def arr @[])
@@ -1522,7 +1523,7 @@
     (set k (next x k)))
   arr)
 
-(defn pairs
+(defun pairs
   "Get the key-value pairs of an associative data structure."
   [x]
   (def arr @[])
@@ -1532,7 +1533,7 @@
     (set k (next x k)))
   arr)
 
-(defn frequencies
+(defun frequencies
   "Get the number of occurrences of each value in a indexed structure."
   [ind]
   (def freqs @{})
@@ -1541,7 +1542,7 @@
     (set (freqs x) (if n (+ 1 n) 1)))
   freqs)
 
-(defn group-by
+(defun group-by
   ``Group elements of `ind` by a function `f` and put the results into a table. The keys of
   the table are the distinct return values of `f`, and the values are arrays of all elements of `ind`
   that are equal to that value.``
@@ -1554,7 +1555,7 @@
       (put ret y @[x])))
   ret)
 
-(defn partition-by
+(defun partition-by
   ``Partition elements of a sequential data structure by a representative function `f`. Partitions
   split when `(f x)` changes values when iterating to the next element `x` of `ind`. Returns a new array
   of arrays.``
@@ -1571,7 +1572,7 @@
       (do (set category y) (set span @[x]) (arr<- ret span))))
   ret)
 
-(defn interleave
+(defun interleave
   "Returns an array of the first elements of each col, then the second, etc."
   [& cols]
   (def res @[])
@@ -1583,7 +1584,7 @@
       (arr<- res (in (in cols ci) i))))
   res)
 
-(defn distinct
+(defun distinct
   "Returns an array of the deduplicated values in xs."
   [xs]
   (def ret @[])
@@ -1591,7 +1592,7 @@
   (each x xs (if (in seen x) nil (do (put seen x true) (arr<- ret x))))
   ret)
 
-(defn flatten-into
+(defun flatten-into
   `Takes a nested array (tree), and appends the depth first traversal of
   that array to an array 'into'. Returns array into.`
   [into xs]
@@ -1601,13 +1602,13 @@
       (arr<- into x)))
   into)
 
-(defn flatten
+(defun flatten
   `Takes a nested array (tree), and returns the depth first traversal of
   that array. Returns a new array.`
   [xs]
   (flatten-into @[] xs))
 
-(defn kvs
+(defun kvs
   `Takes a table or struct and returns and array of key value pairs
   like @[k v k v ...]. Returns a new array.`
   [dict]
@@ -1615,7 +1616,7 @@
   (loop [k :keys dict] (arr<- ret k (in dict k)))
   ret)
 
-(defn from-pairs
+(defun from-pairs
   ``Takes a sequence of pairs and creates a table from each pair. The inverse of
   `pairs` on a table.``
   [ps]
@@ -1624,7 +1625,7 @@
     (put ret k v))
   ret)
 
-(defn interpose
+(defun interpose
   `Returns a sequence of the elements of ind separated by
   sep. Returns a new array.`
   [sep ind]
@@ -1637,7 +1638,7 @@
     (++ i))
   ret)
 
-(defn partition
+(defun partition
   `Partition an indexed data structure into tuples
   of size n. Returns a new array.`
   [n ind]
@@ -1658,7 +1659,7 @@
 ###
 ###
 
-(defn slurp
+(defun slurp
   `Read all data from a file with name path
   and then close the file.`
   [path]
@@ -1668,7 +1669,7 @@
   (file/close f)
   contents)
 
-(defn spit
+(defun spit
   `Write contents to a file at path.
   Can optionally append to the file.`
   [path contents &opt mode]
@@ -1680,10 +1681,10 @@
   nil)
 
 (defdyn *pretty-format*
-  "Format specifier for the `pp` function")
+        "Format specifier for the `pp` function")
 
-(defn pp
-  `Pretty print to stdout or (dyn *out*). The format string used is (dyn *pretty-format* "%q").`
+(defun pp
+    `Pretty print to stdout or (dyn :out). The format string used is (dyn :pretty-format "%q").`
   [x]
   (printf (dyn *pretty-format* "%q") x)
   (flush))
@@ -1740,10 +1741,10 @@
   (def symbols @{[nil nil] x-sym})
   (def length-symbols @{})
 
-  (defn emit [x] (arr<- accum x))
-  (defn emit-branch [condition result] (arr<- accum :branch condition result))
+  (defun emit [x] (arr<- accum x))
+  (defun emit-branch [condition result] (arr<- accum :branch condition result))
 
-  (defn get-sym
+  (defun get-sym
     [parent-sym key]
     (def symbol-key [parent-sym key])
     (or (get symbols symbol-key)
@@ -1752,7 +1753,7 @@
           (emit ['def s [get parent-sym key]])
           s)))
 
-  (defn get-length-sym
+  (defun get-length-sym
     [parent-sym]
     (or (get length-symbols parent-sym)
         (let [s (gensym)]
@@ -1760,7 +1761,7 @@
           (emit ['def s ['if [indexed? parent-sym] [length parent-sym]]])
           s)))
 
-  (defn visit-pattern-1
+  (defun visit-pattern-1
     [b2g parent-sym key pattern]
     (if (= pattern '_) (break))
     (def s (get-sym parent-sym key))
@@ -1810,7 +1811,7 @@
       (do
         (visit-pattern-1 b2g parent-sym key (pattern 0)))))
 
-  (defn visit-pattern-2
+  (defun visit-pattern-2
     [anda gun preds parent-sym key pattern]
     (if (= pattern '_) (break))
     (def s (get-sym parent-sym key))
@@ -1909,11 +1910,15 @@
 ###
 ###
 
+<<<<<<< variant A
 (defdyn *macro-lints*
   "Bound to an array of lint messgae that will be reported by the compiler inside a macro.
   To indicate an error or warning, a macro author should use `maclintf`.")
 
 (defn maclintf
+>>>>>>> variant B
+(defun maclintf
+======= end
   ``When inside a macro, call this function to add a linter warning. Takes
   a `fmt` argument like `string/format` which is used to format the message.``
   [level fmt & args]
@@ -1927,7 +1932,7 @@
     (arr<- lints [level l c msg]))
   nil)
 
-(defn macex1
+(defun macex1
   ``Expand macros in a form, but do not recursively expand macros.
   See `macex` docs for info on on-binding.``
   [x &opt on-binding]
@@ -1936,9 +1941,9 @@
     (when (symbol? x)
       (break (on-binding x))))
 
-  (defn recur [y] (macex1 y on-binding))
+  (defun recur [y] (macex1 y on-binding))
 
-  (defn dotable [t on-value]
+  (defun dotable [t on-value]
     (def newt @{})
     (var key (next t nil))
     (while (not= nil key)
@@ -1946,7 +1951,7 @@
       (set key (next t key)))
     newt)
 
-  (defn expand-bindings [x]
+  (defun expand-bindings [x]
     (case (type x)
       :array (map expand-bindings x)
       :tuple (tuple/slice (map expand-bindings x))
@@ -1954,7 +1959,7 @@
       :struct (table/to-struct (dotable x expand-bindings))
       (recur x)))
 
-  (defn expanddef [t]
+  (defun expanddef [t]
     (def last (in t (- (length t) 1)))
     (def bound (in t 1))
     (tuple/slice
@@ -1963,11 +1968,11 @@
         (tuple/slice t 2 -2)
         @[(recur last)])))
 
-  (defn expandall [t]
+  (defun expandall [t]
     (def args (map recur (tuple/slice t 1)))
     (tuple (in t 0) ;args))
 
-  (defn expandfn [t]
+  (defun expandfn [t]
     (def t1 (in t 1))
     (if (symbol? t1)
       (do
@@ -1977,8 +1982,8 @@
         (def args (map recur (tuple/slice t 2)))
         (tuple 'fn t1 ;args))))
 
-  (defn expandqq [t]
-    (defn qq [x]
+  (defun expandqq [t]
+    (defun qq [x]
       (case (type x)
         :tuple (if (= :brackets (tuple/type x))
                  ~[,;(map qq x)]
@@ -2006,7 +2011,7 @@
      'break expandall
      'upscope expandall})
 
-  (defn dotup [t]
+  (defun dotup [t]
     (def h (in t 0))
     (def s (in specs h))
     (def entry (or (dyn h) {}))
@@ -2028,7 +2033,7 @@
       x))
   ret)
 
-(defn all
+(defun all
   `Returns true if all xs are truthy, otherwise the result of first
   falsey predicate value, (pred x).`
   [pred xs]
@@ -2036,7 +2041,7 @@
   (loop [x :in xs :while ret] (set ret (pred x)))
   ret)
 
-(defn some
+(defun some
   `Returns nil if all xs are false or nil, otherwise returns the result of the
   first truthy predicate, (pred x).`
   [pred xs]
@@ -2044,7 +2049,7 @@
   (loop [x :in xs :while (not ret)] (if-let [y (pred x)] (set ret y)))
   ret)
 
-(defn deep-not=
+(defun deep-not=
   `Like not=, but mutable types (arrays, tables, buffers) are considered
   equal if they have identical structure. Much slower than not=.`
   [x y]
@@ -2059,13 +2064,13 @@
       :buffer (not= (string x) (string y))
       (not= x y))))
 
-(defn deep=
+(defun deep=
   `Like =, but mutable types (arrays, tables, buffers) are considered
   equal if they have identical structure. Much slower than =.`
   [x y]
   (not (deep-not= x y)))
 
-(defn freeze
+(defun freeze
   `Freeze an object (make it immutable) and do a deep copy, making
   child values also immutable. Closures, fibers, and abstract types
   will not be recursively frozen, but all other types will.`
@@ -2080,7 +2085,7 @@
     :buffer (string x)
     x))
 
-(defn macex
+(defun macex
   `Expand macros completely.
   on-binding is an optional callback whenever a normal symbolic binding
   is encounter. This allows macros to easily see all bindings use by their
@@ -2099,11 +2104,11 @@
 
 (defmacro varfn
   `Create a function that can be rebound. varfn has the same signature
-  as defn, but defines functions in the environment as vars. If a var 'name'
+  as defun, but defines functions in the environment as vars. If a var 'name'
   already exists in the environment, it is rebound to the new function. Returns
   a function.`
   [name & body]
-  (def expansion (apply defn name body))
+  (def expansion (apply defun name body))
   (def fbody (last expansion))
   (def modifiers (tuple/slice expansion 2 -2))
   (def metadata @{})
@@ -2144,10 +2149,10 @@
   [arg]
   (var max-param-seen -1)
   (var vararg false)
-  (defn saw-special-arg
+  (defun saw-special-arg
     [num]
     (set max-param-seen (max max-param-seen num)))
-  (defn on-binding
+  (defun on-binding
     [x]
     (if (string/has-prefix? '$ x)
       (cond
@@ -2213,7 +2218,7 @@
   (case k
     "JANET_PATH" (setdyn :syspath v)))
 
-(defn make-env
+(defun make-env
   `Create a new environment table. The new environment
   will inherit bindings from the parent environment, but new
   bindings will not pollute the parent environment.`
@@ -2222,10 +2227,14 @@
   (def newenv (table/setproto @{} parent))
   newenv)
 
+<<<<<<< variant A
 (defdyn *err-color*
   "Whether or not to turn on error coloring in stacktraces and other error messages.")
 
 (defn bad-parse
+>>>>>>> variant B
+(defun bad-parse
+======= end
   "Default handler for a parse error."
   [p where]
   (def ec (dyn *err-color*))
@@ -2242,7 +2251,7 @@
     (if ec "\e[0m" ""))
   (eflush))
 
-(defn- print-line-col
+(defun- print-line-col
   "Print the source code at a line, column in a source file. If unable to open
   the file, prints nothing."
   [where line col]
@@ -2262,7 +2271,7 @@
         (+= index col)
         (eprint (string/repeat " " (inc col)) "^")))))
 
-(defn warn-compile
+(defun warn-compile
   "Default handler for a compile warning"
   [msg level where &opt line col]
   (def ec (dyn *err-color*))
@@ -2280,7 +2289,7 @@
     (eprin "\e[0m"))
   (eflush))
 
-(defn bad-compile
+(defun bad-compile
   "Default handler for a compile error."
   [msg macrof where &opt line col]
   (def ec (dyn *err-color*))
@@ -2300,7 +2309,7 @@
     (eprin "\e[0m"))
   (eflush))
 
-(defn curenv
+(defun curenv
   `Get the current environment table. Same as (fiber/getenv (fiber/current)). If n
   is provided, gets the nth prototype of the environment table.`
   [&opt n]
@@ -2315,7 +2324,7 @@
    :strict 3
    :all inf})
 
-(defn run-context
+(defun run-context
   ```
   Run a context. This evaluates expressions in an environment,
   and encapsulates the parsing, compilation, and evaluation.
@@ -2367,7 +2376,7 @@
 
   # Evaluate 1 source form in a protected manner
   (def lints @[])
-  (defn eval1 [source &opt l c]
+  (defun eval1 [source &opt l c]
     (def source (if expand (expand source) source))
     (var good true)
     (var resumeval nil)
@@ -2417,14 +2426,14 @@
   (def p-status (p :status))
   (def p-has-more (p :has-more))
 
-  (defn parse-err
+  (defun parse-err
     "Handle parser error in the correct environment"
     [p where]
     (def f (coro (on-parse-error p where)))
     (fiber/setenv f env)
     (resume f))
 
-  (defn produce []
+  (defun produce []
     (def tup (p-produce p true))
     [(in tup 0) ;(tuple/sourcemap tup)])
 
@@ -2474,7 +2483,7 @@
   (put env :exit nil)
   (in env :exit-value env))
 
-(defn quit
+(defun quit
   `Tries to exit from the current repl or context. Does not always exit the application.
   Works by setting the :exit dynamic binding to true. Passing a non-nil value here will cause the outer
   run-context to return that value.`
@@ -2483,13 +2492,13 @@
   (setdyn :exit-value value)
   nil)
 
-(defn eval-string
+(defun eval-string
   ``
   Evaluates a string in the current environment. If more control over the
   environment is needed, use `run-context`.``
   [str]
   (var state (string str))
-  (defn chunks [buf _]
+  (defun chunks [buf _]
     (def ret state)
     (set state nil)
     (when ret
@@ -2509,7 +2518,7 @@
                 :source :eval-string})
   returnval)
 
-(defn eval
+(defun eval
   ``Evaluates a form in the current environment. If more control over the
   environment is needed, use `run-context`.``
   [form]
@@ -2518,7 +2527,7 @@
     (res)
     (error (get res :error))))
 
-(defn parse
+(defun parse
   `Parse a string and return the first value. For complex parsing, such as for a repl with error handling,
   use the parser api.`
   [str]
@@ -2559,21 +2568,21 @@
   (if (eval cnd)
     ~(upscope ,;body)))
 
-(defn make-image
+(defun make-image
   `Create an image from an environment returned by require.
   Returns the image source as a string.`
   [env]
   (marshal env make-image-dict))
 
-(defn load-image
+(defun load-image
   "The inverse operation to make-image. Returns an environment."
   [image]
   (unmarshal image load-image-dict))
 
-(defn- check-relative [x] (if (string/has-prefix? "." x) x))
-(defn- check-not-relative [x] (if-not (string/has-prefix? "." x) x))
-(defn- check-is-dep [x] (unless (or (string/has-prefix? "/" x) (string/has-prefix? "." x)) x))
-(defn- check-project-relative [x] (if (string/has-prefix? "/" x) x))
+(defun- check-relative [x] (if (string/has-prefix? "." x) x))
+(defun- check-not-relative [x] (if-not (string/has-prefix? "." x) x))
+(defun- check-is-dep [x] (unless (or (string/has-prefix? "/" x) (string/has-prefix? "." x)) x))
+(defun- check-project-relative [x] (if (string/has-prefix? "/" x) x))
 
 (def module/cache
   "Table mapping loaded module identifiers to their environments."
@@ -2594,7 +2603,7 @@
   ```
   @[])
 
-(defn module/add-paths
+(defun module/add-paths
   ```
   Add paths to `module/paths` for a given loader such that
   the generated paths behave like other module types, including
@@ -2603,7 +2612,7 @@
   keyword name of a loader in `module/loaders`. Returns the modified `module/paths`.
   ```
   [ext loader]
-  (defn- find-prefix
+  (defun- find-prefix
     [pre]
     (or (find-index |(and (string? ($ 0)) (string/has-prefix? pre ($ 0))) module/paths) 0))
   (def all-index (find-prefix ".:all:"))
@@ -2621,7 +2630,7 @@
 (arr! module/paths 0 [(fn is-cached [path] (if (in module/cache path) path)) :preload check-not-relative])
 
 # Version of fexists that works even with a reduced OS
-(defn- fexists
+(defun- fexists
   [path]
   (compif (dyn 'os/stat)
     (= :file (os/stat path :mode))
@@ -2632,14 +2641,14 @@
       (file/close f)
       res)))
 
-(defn- mod-filter
+(defun- mod-filter
   [x path]
   (case (type x)
     :nil path
     :string (string/has-suffix? x path)
     (x path)))
 
-(defn module/find
+(defun module/find
   ```
   Try to match a module or path name from the patterns in module/paths.
   Returns a tuple (fullpath kind) where the kind is one of :source, :native,
@@ -2673,7 +2682,7 @@
   circular dependencies.`
   @{})
 
-(defn dofile
+(defun dofile
   `Evaluate a file, file path, or stream and return the resulting environment. :env, :expander,
   :source, :evaluator, :read, and :parser are passed through to the underlying
   run-context call. If exit is true, any top level errors will trigger a
@@ -2696,8 +2705,8 @@
   (put env :source (or src (if-not path-is-file spath path)))
   (var exit-error nil)
   (var exit-fiber nil)
-  (defn chunks [buf _] (:read f 4096 buf))
-  (defn bp [&opt x y]
+  (defun chunks [buf _] (:read f 4096 buf))
+  (defun bp [&opt x y]
     (when exit
       (bad-parse x y)
       (os/exit 1))
@@ -2706,7 +2715,7 @@
     (with-dyns [*err* buf *err-color* false]
       (bad-parse x y))
     (set exit-error (string/slice buf 0 -2)))
-  (defn bc [&opt x y z a b]
+  (defun bc [&opt x y z a b]
     (when exit
       (bad-compile x y z a b)
       (os/exit 1))
@@ -2760,7 +2769,7 @@
                    m)))
     :image (fn image-loader [path &] (load-image (slurp path)))})
 
-(defn- require-1
+(defun- require-1
   [path args kargs]
   (def [fullpath mod-kind] (module/find path))
   (unless fullpath (error mod-kind))
@@ -2775,14 +2784,14 @@
         (put module/cache fullpath env)
         env))))
 
-(defn require
+(defun require
   `Require a module with the given name. Will search all of the paths in
   module/paths. Returns the new environment
   returned from compiling and running the file.`
   [path & args]
   (require-1 path args (struct ;args)))
 
-(defn merge-module
+(defun merge-module
   `Merge a module source into the target environment with a prefix, as with the import macro.
   This lets users emulate the behavior of import with a custom module table.
   If export is truthy, then merged functions are not marked as private. Returns
@@ -2793,7 +2802,7 @@
     (put target (symbol prefix k) newv))
   target)
 
-(defn import*
+(defun import*
   `Function form of import. Same parameters, but the path
   and other symbol parameters should be strings instead.`
   [path & args]
@@ -2835,7 +2844,7 @@
 ###
 ###
 
-(defn- env-walk
+(defun- env-walk
   [pred &opt env local]
   (default env (fiber/getenv (fiber/current)))
   (def envs @[])
@@ -2847,20 +2856,21 @@
     (put ret-set k true))
   (sort (keys ret-set)))
 
-(defn all-bindings
+(defun all-bindings
   `Get all symbols available in an environment. Defaults to the current
   fiber's environment. If local is truthy, will not show inherited bindings
   (from prototype tables).`
   [&opt env local]
   (env-walk symbol? env local))
 
-(defn all-dynamics
+(defun all-dynamics
   `Get all dynamic bindings in an environment. Defaults to the current
   fiber's environment. If local is truthy, will not show inherited bindings
   (from prototype tables).`
   [&opt env local]
   (env-walk keyword? env local))
 
+<<<<<<< variant A
 (defdyn *doc-width*
   "Width in columns to print documentation printed with `doc-format`")
 
@@ -2868,6 +2878,9 @@
   "Whether or not to colorize documentation printed with `doc-format`.")
 
 (defn doc-format
+>>>>>>> variant B
+(defun doc-format
+======= end
   `Reformat a docstring to wrap a certain width. Docstrings can either be plaintext
   or a subset of markdown. This allows a long single line of prose or formatted text to be
   a well-formed docstring. Returns a buffer containing the formatted text.`
@@ -2891,7 +2904,7 @@
        :italics ["*" "*"]
        :bold ["**" "**"]}))
   (def modes @{})
-  (defn toggle [mode]
+  (defun toggle [mode]
     (def active (get modes mode))
     (def delims (get delimiters mode))
     (put modes mode (not active))
@@ -2902,49 +2915,49 @@
   (var stack @[])  # return value for this block.
 
   # Traversal helpers
-  (defn c [] (get str cursor))
-  (defn cn [n] (get str (+ n cursor)))
-  (defn c++ [] (let [ret (get str cursor)] (++ cursor) ret))
-  (defn c+=n [n] (let [ret (get str cursor)] (+= cursor n) ret))
+  (defun c [] (get str cursor))
+  (defun cn [n] (get str (+ n cursor)))
+  (defun c++ [] (let [ret (get str cursor)] (++ cursor) ret))
+  (defun c+=n [n] (let [ret (get str cursor)] (+= cursor n) ret))
   # skip* functions return number of characters matched and advance the cursor.
-  (defn skipwhite []
+  (defun skipwhite []
     (def x cursor)
     (while (= (c) (chr " ")) (++ cursor))
     (- cursor x))
-  (defn skipline []
+  (defun skipline []
     (def x cursor)
     (while (let [y (c)] (and y (not= y (chr "\n")))) (++ cursor))
     (c++)
     (- cursor x))
 
   # Detection helpers - return number of characters matched
-  (defn ul? []
+  (defun ul? []
     (let [x (c) x1 (cn 1)]
       (and
         (= x1 (chr " "))
         (or (= x (chr "*")) (= x (chr "-")))
         2)))
-  (defn ol? []
+  (defun ol? []
     (def old cursor)
     (while (and (>= (c) (chr "0")) (<= (c) (chr "9"))) (c++))
     (let [c1 (c) c2 (cn 1) c* cursor]
       (set cursor old)
       (if (and (= c1 (chr ".")) (= c2 (chr " ")))
         (- c* cursor -2))))
-  (defn fcb? [] (if (= (chr "`") (c) (cn 1) (cn 2)) 3))
-  (defn nl? [] (= (chr "\n") (c)))
+  (defun fcb? [] (if (= (chr "`") (c) (cn 1) (cn 2)) 3))
+  (defun nl? [] (= (chr "\n") (c)))
 
   # Parse helper
   # parse-* functions push nodes to `stack`, and return
   # the indentation they leave the cursor on.
 
   (var parse-blocks nil) # mutual recursion
-  (defn getslice [from to]
+  (defun getslice [from to]
     (def to (min to (length str)))
     (string/slice str from to))
-  (defn push [x] (arr<- stack x))
+  (defun push [x] (arr<- stack x))
 
-  (defn parse-list [bullet-check initial indent]
+  (defun parse-list [bullet-check initial indent]
     (def temp-stack @[initial])
     (def old-stack stack)
     (set stack temp-stack)
@@ -2966,13 +2979,13 @@
     (push temp-stack)
     current-indent)
 
-  (defn add-codeblock [indent start end]
+  (defun add-codeblock [indent start end]
     (def replace-chunk (string "\n" (string/repeat " " indent)))
     (push @[:cb (string/replace-all replace-chunk "\n" (getslice start end))])
     (skipline)
     (skipwhite))
 
-  (defn parse-fcb [indent]
+  (defun parse-fcb [indent]
     (c+=n 3)
     (skipline)
     (c+=n indent)
@@ -2985,7 +2998,7 @@
       (skipwhite))
     (add-codeblock indent start end))
 
-  (defn parse-icb [indent]
+  (defun parse-icb [indent]
     (var current-indent indent)
     (def start cursor)
     (var end cursor)
@@ -2996,15 +3009,15 @@
       (if (< current-indent indent) (break)))
     (add-codeblock indent start end))
 
-  (defn tokenize-line [line]
+  (defun tokenize-line [line]
     (def tokens @[])
     (def token @"")
     (var token-length 0)
-    (defn delim [mode]
+    (defun delim [mode]
       (def d (toggle mode))
       (if-not has-color (+= token-length (length d)))
       (buffer/push token d))
-    (defn endtoken []
+    (defun endtoken []
       (if (first token) (arr<- tokens [(string token) token-length]))
       (buffer/clear token)
       (set token-length 0))
@@ -3030,13 +3043,13 @@
     (var new-indent indent)
     (var p-start nil)
     (var p-end nil)
-    (defn p-line []
+    (defun p-line []
       (unless p-start
         (set p-start cursor))
       (skipline)
       (set p-end cursor)
       (set new-indent (skipwhite)))
-    (defn finish-p []
+    (defun finish-p []
       (when (and p-start (> p-end p-start))
         (push (tokenize-line (getslice p-start p-end)))
         (set p-start nil)))
@@ -3051,7 +3064,7 @@
     (finish-p)
     new-indent))
 
-  # Handle first line specially for defn, defmacro, etc.
+  # Handle first line specially for defun, defmacro, etc.
   (when (= (chr "(") (in str 0))
     (skipline)
     (def first-line (string/slice str 0 (- cursor 1)))
@@ -3066,17 +3079,17 @@
   (var current-column 0)
 
   # Emission
-  (defn emit-indent [indent]
+  (defun emit-indent [indent]
     (def delta (- indent current-column))
     (when (< 0 delta)
       (buffer/push buf (string/repeat " " delta))
       (set current-column indent)))
 
-  (defn emit-nl [&opt indent]
+  (defun emit-nl [&opt indent]
     (buffer/push buf "\n")
     (set current-column 0))
 
-  (defn emit-word [word indent &opt len]
+  (defun emit-word [word indent &opt len]
     (def last-byte (last buf))
     (when (and
             last-byte
@@ -3091,7 +3104,7 @@
     (buffer/push buf word)
     (+= current-column len))
 
-  (defn emit-code
+  (defun emit-code
     [code indent]
     (def replacement (string "\n" (string/repeat " " (+ 4 indent))))
     (emit-indent (+ 4 indent))
@@ -3100,7 +3113,7 @@
       (set current-column 0)
       (emit-nl)))
 
-  (defn emit-node
+  (defun emit-node
     [el indent]
     (emit-indent indent)
     (if (tuple? el)
@@ -3129,7 +3142,7 @@
 
   buf)
 
-(defn- print-index
+(defun- print-index
   "Print bindings in the current environment given a filter function"
   [fltr]
   (def bindings (filter fltr (all-bindings)))
@@ -3140,7 +3153,7 @@
   (print (doc-format (string "Dynamics:\n\n" (string/join dynamics " "))))
   (print "\n    Use (doc sym) for more information on a binding.\n"))
 
-(defn- print-module-entry
+(defun- print-module-entry
   [x]
   (def bind-type
     (string "    "
@@ -3161,14 +3174,14 @@
          (if d (doc-format d) "\n    no documentation found.\n")
          "\n"))
 
-(defn- print-special-form-entry
+(defun- print-special-form-entry
   [x]
   (print "\n\n"
          (string "    special form\n\n")
          (string "    (" x " ...)\n\n")
          (string "    See https://janet-lang.org/docs/specials.html\n\n")))
 
-(defn doc*
+(defun doc*
   "Get the documentation for a symbol in a given environment. Function form of doc."
   [&opt sym]
 
@@ -3204,7 +3217,7 @@
   [&opt sym]
   ~(,doc* ',sym))
 
-(defn doc-of
+(defun doc-of
   `Searches all loaded modules in module/cache for a given binding and prints out its documentation.
   This does a search by value instead of by name. Returns nil.`
   [x]
@@ -3226,40 +3239,40 @@
 ###
 ###
 
-(defn .fiber
+(defun .fiber
   "Get the current fiber being debugged."
   []
   (dyn :fiber))
 
-(defn .signal
+(defun .signal
   "Get the current signal being debugged."
   []
   (dyn :signal))
 
-(defn .stack
+(defun .stack
   "Print the current fiber stack"
   []
   (print)
   (with-dyns [*err-color* false] (debug/stacktrace (.fiber) (.signal) ""))
   (print))
 
-(defn .frame
+(defun .frame
   "Show a stack frame"
   [&opt n]
   (def stack (debug/stack (.fiber)))
   (in stack (or n 0)))
 
-(defn .fn
+(defun .fn
   "Get the current function"
   [&opt n]
   (in (.frame n) :function))
 
-(defn .slots
+(defun .slots
   "Get an array of slots in a stack frame"
   [&opt n]
   (in (.frame n) :slots))
 
-(defn .slot
+(defun .slot
   "Get the value of the nth slot."
   [&opt nth frame-idx]
   (in (.slots frame-idx) (or nth 0)))
@@ -3267,19 +3280,19 @@
 # Conditional compilation for disasm
 (compwhen (dyn 'disasm)
 
-  (defn .disasm
+  (defun .disasm
     "Gets the assembly for the current function."
     [&opt n]
     (def frame (.frame n))
     (def func (frame :function))
     (disasm func))
 
-  (defn .bytecode
+  (defun .bytecode
     "Get the bytecode for the current function."
     [&opt n]
     ((.disasm n) :bytecode))
 
-  (defn .ppasm
+  (defun .ppasm
     "Pretty prints the assembly for the current function"
     [&opt n]
     (def frame (.frame n))
@@ -3309,7 +3322,7 @@
       (print))
     (print))
 
-  (defn .breakall
+  (defun .breakall
     "Set breakpoints on all instructions in the current function."
     [&opt n]
     (def fun (.fn n))
@@ -3318,7 +3331,7 @@
       (debug/fbreak fun i))
     (print "Set " (length bytecode) " breakpoints in " fun))
 
-  (defn .clearall
+  (defun .clearall
     "Clear all breakpoints on the current function."
     [&opt n]
     (def fun (.fn n))
@@ -3327,7 +3340,7 @@
       (debug/unfbreak fun i))
     (print "Cleared " (length bytecode) " breakpoints in " fun)))
 
-(defn .source
+(defun .source
   "Show the source code for the function being debugged."
   [&opt n]
   (def frame (.frame n))
@@ -3335,7 +3348,7 @@
   (def all-source (slurp s))
   (print "\n" all-source "\n"))
 
-(defn .break
+(defun .break
   "Set breakpoint at the current pc."
   []
   (def frame (.frame))
@@ -3344,7 +3357,7 @@
   (debug/fbreak fun pc)
   (print "Set breakpoint in " fun " at pc=" pc))
 
-(defn .clear
+(defun .clear
   "Clear the current breakpoint"
   []
   (def frame (.frame))
@@ -3353,7 +3366,7 @@
   (debug/unfbreak fun pc)
   (print "Cleared breakpoint in " fun " at pc=" pc))
 
-(defn .next
+(defun .next
   "Go to the next breakpoint."
   [&opt n]
   (var res nil)
@@ -3361,13 +3374,13 @@
     (set res (resume (.fiber))))
   res)
 
-(defn .nextc
+(defun .nextc
   "Go to the next breakpoint, clearing the current breakpoint."
   [&opt n]
   (.clear)
   (.next n))
 
-(defn .step
+(defun .step
   "Execute the next n instructions."
   [&opt n]
   (var res nil)
@@ -3388,7 +3401,7 @@
 ###
 ###
 
-(defn repl
+(defun repl
   ``Run a repl. The first parameter is an optional function to call to
   get a chunk of source code that should return nil for end of file.
   The second parameter is a function that is called when a signal is
@@ -3407,17 +3420,17 @@
           ":"
           (:state p :delimiters) "> ")
         buf env)))
-  (defn make-onsignal
+  (defun make-onsignal
     [e level]
 
-    (defn enter-debugger
+    (defun enter-debugger
       [f x]
       (def nextenv (make-env env))
       (put nextenv :fiber f)
       (put nextenv :debug-level level)
       (put nextenv :signal x)
       (merge-into nextenv debugger-env)
-      (defn debugger-chunks [buf p]
+      (defun debugger-chunks [buf p]
         (def status (:state p :delimiters))
         (def c ((:where p) 0))
         (def prpt (string "debug[" level "]:" c ":" status "> "))
@@ -3456,9 +3469,9 @@
 
 (compwhen (dyn 'ev/go)
 
-  (defn net/close "Alias for ev/close." [stream] (ev/close stream))
+  (defun net/close "Alias for ev/close." [stream] (ev/close stream))
 
-  (defn ev/call
+  (defun ev/call
     ```
     Call a function asynchronously.
     Returns a fiber that is scheduled to run the function.
@@ -3491,7 +3504,7 @@
          (,ev/deadline ,deadline nil ,f)
          (,resume ,f))))
 
-  (defn- wait-for-fibers
+  (defun- wait-for-fibers
     [chan fibers]
     (repeat (length fibers)
       (def [sig fiber] (ev/take chan))
@@ -3515,7 +3528,7 @@
          ,res))))
 
 (compwhen (dyn 'net/listen)
-  (defn net/server
+  (defun net/server
     "Start a server asynchronously with net/listen and net/accept-loop. Returns the new server stream."
     [host port &opt handler type]
     (def s (net/listen host port type))
@@ -3529,7 +3542,7 @@
 ###
 ###
 
-(defn- no-side-effects
+(defun- no-side-effects
   `Check if form may have side effects. If returns true, then the src
   must not have side effects, such as calling a C function.`
   [src]
@@ -3544,17 +3557,17 @@
          (all no-side-effects (values src)))
     true))
 
-(defn- is-safe-def [x] (no-side-effects (last x)))
+(defun- is-safe-def [x] (no-side-effects (last x)))
 
-(def- safe-forms {'defn true 'varfn true 'defn- true 'defmacro true 'defmacro- true
+(def- safe-forms {'defun true 'varfn true 'defun- true 'defmacro true 'defmacro- true
                   'def is-safe-def 'var is-safe-def 'def- is-safe-def 'var- is-safe-def
                   'defglobal is-safe-def 'varglobal is-safe-def})
 
 (def- importers {'import true 'import* true 'dofile true 'require true})
-(defn- use-2 [evaluator args]
+(defun- use-2 [evaluator args]
   (each a args (import* (string a) :prefix "" :evaluator evaluator)))
 
-(defn- flycheck-evaluator
+(defun- flycheck-evaluator
   ``An evaluator function that is passed to `run-context` that lints (flychecks) code.
   This means code will parsed and compiled, macros executed, but the code will not be run.
   Used by `flycheck`.``
@@ -3582,7 +3595,7 @@
             newtup (tuple/setmap (tuple ;source :evaluator flycheck-evaluator) l c)]
         ((compile newtup env where))))))
 
-(defn flycheck
+(defun flycheck
   ``Check a file for errors without running the file. Found errors will be printed to stderr
   in the usual format. Macros will still be executed, however, so
   arbitrary execution is possible. Other arguments are the same as dofile. `path` can also be
@@ -3608,13 +3621,14 @@
 # conditional compilation for reduced os
 (def- getenv-alias (if-let [entry (in root-env 'os/getenv)] (entry :value) (fn [&])))
 
-(defn- run-main
+(defun- run-main
   [env subargs arg]
   (if-let [entry (in env 'main)
            main (or (get entry :value) (in (get entry :ref) 0))]
     (let [thunk (compile [main ;subargs] env arg)]
       (if (function? thunk) (thunk) (error (thunk :error))))))
 
+<<<<<<< variant A
 (defdyn *args*
   "Dynamic bindings that will contain command line arguments at program start")
 
@@ -3626,6 +3640,9 @@
   "Path to profile file loaded when starting up the repl.")
 
 (defn cli-main
+>>>>>>> variant B
+(defun cli-main
+======= end
   `Entrance for the Janet CLI tool. Call this function with the command line
   arguments as an array or tuple of strings to invoke the CLI interface.`
   [args]
@@ -3648,7 +3665,7 @@
   (if-let [jp (getenv-alias "JANET_PATH")] (setdyn :syspath jp))
   (if-let [jprofile (getenv-alias "JANET_PROFILE")] (setdyn *profilepath* jprofile))
 
-  (defn- get-lint-level
+  (defun- get-lint-level
     [i]
     (def x (in args (+ i 1)))
     (or (scan-number x) (keyword x)))
@@ -3720,7 +3737,7 @@
      "x" (fn [i &] (set error-level (get-lint-level i)) 2)
      "R" (fn [&] (setdyn *profilepath* nil) 1)})
 
-  (defn- dohandler [n i &]
+  (defun- dohandler [n i &]
     (def h (in handlers n))
     (if h (h i) (do (print "unknown flag -" n) ((in handlers "h")))))
 
@@ -3766,10 +3783,10 @@
         (if-not quiet
           (print "matsurika janet: " (os/which) " (" (os/arch) ")"))
         (flush)
-        (defn getprompt [p]
+        (defun getprompt [p]
           (def [line] (parser/where p))
           (string "repl:" line ":" (parser/state p :delimiters) "> "))
-        (defn getstdin [prompt buf _]
+        (defun getstdin [prompt buf _]
           (file/write stdout prompt)
           (file/flush stdout)
           (file/read stdin :line buf))
@@ -3781,7 +3798,7 @@
           (put env :debug true)
           (put env :redef true))
         (def getter (if raw-stdin getstdin getline))
-        (defn getchunk [buf p]
+        (defun getchunk [buf p]
           (getter (getprompt p) buf env))
         (setdyn :pretty-format (if colorize "%.20Q" "%.20q"))
         (setdyn :err-color (if colorize true))
@@ -3789,18 +3806,28 @@
         (setdyn :lint-error error-level)
         (setdyn :lint-warn error-level)
         (repl getchunk nil env)))))
+###
+###
+### MATSURIKA
+###
+###
 
-## MATSURIKA
+
+# Shell commands
+
 (defmacro sh [& args]
+  "Run as shell command. Prints output, returns stat"
   (def fst (get args 0))
   (if (tuple? fst)
     ~(os/shell ,(string/join (map string fst) " "))
     ~(os/shell ,(string/join (map string args) " "))))
 
 (defmacro sh-do [& forms]
+  "Run multiple forms as shell commands"
   ~(do ,;(map sh forms)))
 
 (defmacro $ [& args]
+  "Execute program. Returns output string."
   (let [fst (get args 0)
         cmd (if (tuple? fst)
               (map string fst)
@@ -3812,6 +3839,7 @@
        (:read (p :out) :all))))
 
 (defmacro $-do [& forms]
+  "Execute multiple programs"
   (def forms (map $ forms))
   ~(map eval ,forms))
 
@@ -3924,7 +3952,7 @@
   (print "#define JANET_BUILD \"" janet/build "\"")
   (print ```#define JANET_AMALG```)
 
-  (defn do-one-file
+  (defun do-one-file
     [fname]
     (print "\n/* " fname " */")
     (print "#line 0 \"" fname "\"\n")
@@ -3961,6 +3989,3 @@
   (print "  0\n};\n")
   (print "const unsigned char *janet_core_image = janet_core_image_bytes;")
   (print "size_t janet_core_image_size = sizeof(janet_core_image_bytes);"))
-
-
-

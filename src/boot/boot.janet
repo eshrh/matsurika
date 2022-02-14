@@ -3790,6 +3790,31 @@
         (setdyn :lint-warn error-level)
         (repl getchunk nil env)))))
 
+## MATSURIKA
+(defmacro sh [& args]
+  (def fst (get args 0))
+  (if (tuple? fst)
+    ~(os/shell ,(string/join (map string fst) " "))
+    ~(os/shell ,(string/join (map string args) " "))))
+
+(defmacro sh-do [& forms]
+  ~(do ,;(map sh forms)))
+
+(defmacro $ [& args]
+  (let [fst (get args 0)
+        cmd (if (tuple? fst)
+              (map string fst)
+              (map string args))]
+    ~(do
+       (def p
+         (os/spawn ,cmd :p {:in :pipe :out :pipe}))
+       (:wait p)
+       (:read (p :out) :all))))
+
+(defmacro $-do [& forms]
+  (def forms (map $ forms))
+  ~(map eval ,forms))
+
 ###
 ###
 ### Bootstrap
@@ -3938,6 +3963,4 @@
   (print "size_t janet_core_image_size = sizeof(janet_core_image_bytes);"))
 
 
-
-## MATSURIKA
 

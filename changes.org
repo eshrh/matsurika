@@ -85,15 +85,15 @@
 - math/next :: next-after
 ** Macros
 - defn :: defun
+** Not renamed:
+- fiber
+- parser
   
 * Additions
 ** Math
 *** Bitwise operations
-- bit-or
-- bit&
-- bit-flip
-- bit^
-- bit-str
+- bflip
+- bstr
 ** Shell
 + $ :: run shell command
 + $-do :: run many shell commands

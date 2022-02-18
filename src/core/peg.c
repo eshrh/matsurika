@@ -1764,12 +1764,12 @@ static Janet peg_next(void *p, Janet key) {
 /* Load the peg module */
 void janet_lib_peg(JanetTable *env) {
     JanetRegExt cfuns[] = {
-        JANET_CORE_REG("peg/compile", cfun_peg_compile),
-        JANET_CORE_REG("peg/match", cfun_peg_match),
-        JANET_CORE_REG("peg/find", cfun_peg_find),
-        JANET_CORE_REG("peg/find-all", cfun_peg_find_all),
-        JANET_CORE_REG("peg/replace", cfun_peg_replace),
-        JANET_CORE_REG("peg/replace-all", cfun_peg_replace_all),
+        JANET_CORE_REG("peg-compile", cfun_peg_compile),
+        JANET_CORE_REG("peg>!", cfun_peg_match),
+        JANET_CORE_REG("peg>", cfun_peg_find),
+        JANET_CORE_REG("peg>*", cfun_peg_find_all),
+        JANET_CORE_REG("peg/>", cfun_peg_replace),
+        JANET_CORE_REG("peg/>*", cfun_peg_replace_all),
         JANET_REG_END
     };
     janet_core_cfuns_ext(env, NULL, cfuns);

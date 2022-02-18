@@ -119,11 +119,11 @@ JANET_CORE_FN(cfun_tuple_setmap,
 /* Load the tuple module */
 void janet_lib_tuple(JanetTable *env) {
     JanetRegExt tuple_cfuns[] = {
-        JANET_CORE_REG("tuple/brackets", cfun_tuple_brackets),
-        JANET_CORE_REG("tuple/slice", cfun_tuple_slice),
-        JANET_CORE_REG("tuple/type", cfun_tuple_type),
-        JANET_CORE_REG("tuple/sourcemap", cfun_tuple_sourcemap),
-        JANET_CORE_REG("tuple/setmap", cfun_tuple_setmap),
+        JANET_CORE_REG("tup-brackets", cfun_tuple_brackets),
+        JANET_CORE_REG("tup:", cfun_tuple_slice),
+        JANET_CORE_REG("tup-type", cfun_tuple_type),
+        JANET_CORE_REG("tup-sourcemap", cfun_tuple_sourcemap),
+        JANET_CORE_REG("tup-setmap", cfun_tuple_setmap),
         JANET_REG_END
     };
     janet_core_cfuns_ext(env, NULL, tuple_cfuns);

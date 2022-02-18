@@ -40,7 +40,7 @@
       (set index (+ index 1)))
     (arr<- modifiers (string buf ")\n\n" docstr))
     # Build return value
-    ~(def ,name ,;modifiers (fn ,name ,;(tuple/slice more start)))))
+    ~(def ,name ,;modifiers (fn ,name ,;(tup: more start)))))
 
 (defun defmacro :macro
   "Define a macro."
@@ -239,7 +239,7 @@
     (arr<- accum (tuple 'def k v))
     (+= i 2))
   (arr+ accum body)
-  (tuple/slice accum 0))
+  (tup: accum 0))
 
 (defmacro try
   `Try something and catch errors. Body is any expression,
@@ -254,7 +254,7 @@
     ~(let [,f (,fiber/new (fn [] ,body) :ie)
            ,r (,resume ,f)]
        (if (,= (,fiber/status ,f) :error)
-         (do (def ,err ,r) ,(if fib ~(def ,fib ,f)) ,;(tuple/slice catch 1))
+         (do (def ,err ,r) ,(if fib ~(def ,fib ,f)) ,;(tup: catch 1))
          ,r))))
 
 (defmacro protect
@@ -678,7 +678,7 @@
     4 (let [[f g h i] functions] (fn [& x] (f (g (h (i ;x))))))
     (let [[f g h i] functions]
       (comp (fn [x] (f (g (h (i x)))))
-            ;(tuple/slice functions 4 -1)))))
+            ;(tup: functions 4 -1)))))
 
 (defun identity
   "A function that returns its argument."
@@ -1085,7 +1085,7 @@
   [n ind]
   (cond
     (bytes? ind) (slice-n string/slice n ind)
-    (indexed? ind) (slice-n tuple/slice n ind)
+    (indexed? ind) (slice-n tup: n ind)
     (take-n-fallback n ind)))
 
 (defun- slice-until
@@ -1100,7 +1100,7 @@
   [pred ind]
   (cond
     (bytes? ind) (slice-until string/slice pred ind)
-    (indexed? ind) (slice-until tuple/slice pred ind)
+    (indexed? ind) (slice-until tup: pred ind)
     (take-until-fallback pred ind)))
 
 (defun take-while
@@ -1114,7 +1114,7 @@
   instance, respectively.``
   [n ind]
   (def use-str (bytes? ind))
-  (def f (if use-str string/slice tuple/slice))
+  (def f (if use-str string/slice tup:))
   (def len (length ind))
   # make sure start is in [0, len]
   (def m (if (> n 0) n 0))
@@ -1125,7 +1125,7 @@
   "Same as `(drop-while (complement pred) ind)`."
   [pred ind]
   (def use-str (bytes? ind))
-  (def f (if use-str string/slice tuple/slice))
+  (def f (if use-str string/slice tup:))
   (def i (find-index pred ind))
   (def len (length ind))
   (def start (if (nil? i) len i))
@@ -1145,7 +1145,7 @@
     (def ret @[])
     (each f funs
       (arr<- ret (f ;args)))
-    (tuple/slice ret 0)))
+    (tup: ret 0)))
 
 (defmacro juxt
   "Macro form of juxt*. Same behavior but more efficient."
@@ -1154,7 +1154,7 @@
   (def $args (gensym))
   (each f funs
     (arr<- parts (tuple apply f $args)))
-  (tuple 'fn (tuple '& $args) (tuple/slice parts 0)))
+  (tuple 'fn (tuple '& $args) (tup: parts 0)))
 
 (defmacro defdyn
   ``Define an alias for a keyword that is used as a dynamic binding. The
@@ -1184,7 +1184,7 @@
   `Print a value and a description of the form that produced that value to
   stderr. Evaluates to x.`
   [x]
-  (def [l c] (tuple/sourcemap (dyn *macro-form* ())))
+  (def [l c] (tup-sourcemap (dyn *macro-form* ())))
   (def cf (dyn *current-file*))
   (def fmt-1 (if cf (string/format "trace [%s]" cf) "trace"))
   (def fmt-2 (if (or (neg? l) (neg? c)) ":" (string/format " on line %d, column %d:" l c)))
@@ -1206,7 +1206,7 @@
                  (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
     (def parts (arr+ @[h last] t))
-    (tuple/slice parts 0))
+    (tup: parts 0))
   (reduce fop x forms))
 
 (defmacro ->>
@@ -1219,7 +1219,7 @@
                  (tuple (in n 0) (arr: n 1))
                  (tuple n @[])))
     (def parts (arr+ @[h] t @[last]))
-    (tuple/slice parts 0))
+    (tup: parts 0))
   (reduce fop x forms))
 
 (defmacro -?>
@@ -1235,7 +1235,7 @@
                  (tuple n @[])))
     (def sym (gensym))
     (def parts (arr+ @[h sym] t))
-    ~(let [,sym ,last] (if ,sym ,(tuple/slice parts 0))))
+    ~(let [,sym ,last] (if ,sym ,(tup: parts 0))))
   (reduce fop x forms))
 
 (defmacro -?>>
@@ -1251,7 +1251,7 @@
                  (tuple n @[])))
     (def sym (gensym))
     (def parts (arr+ @[h] t @[sym]))
-    ~(let [,sym ,last] (if ,sym ,(tuple/slice parts 0))))
+    ~(let [,sym ,last] (if ,sym ,(tup: parts 0))))
   (reduce fop x forms))
 
 (defun- walk-ind [f form]
@@ -1276,9 +1276,9 @@
     :struct (table/to-struct (walk-dict f form))
     :array (walk-ind f form)
     :tuple (let [x (walk-ind f form)]
-             (if (= :parens (tuple/type form))
-               (tuple/slice x)
-               (tuple/brackets ;x)))
+             (if (= :parens (tup-type form))
+               (tup: x)
+               (tup-brackets ;x)))
     form))
 
 (defun postwalk
@@ -1645,7 +1645,7 @@
   (var i 0) (var nextn n)
   (def len (length ind))
   (def ret (arr-new (ceil (/ len n))))
-  (def slicer (if (bytes? ind) string/slice tuple/slice))
+  (def slicer (if (bytes? ind) string/slice tup:))
   (while (<= nextn len)
     (arr<- ret (slicer ind i nextn))
     (set i nextn)
@@ -1663,10 +1663,10 @@
   `Read all data from a file with name path
   and then close the file.`
   [path]
-  (def f (file/open path :rb))
+  (def f (file-open path :rb))
   (if-not f (error (string "could not open file " path)))
-  (def contents (file/read f :all))
-  (file/close f)
+  (def contents (file-read f :all))
+  (file-close f)
   contents)
 
 (defun spit
@@ -1674,10 +1674,10 @@
   Can optionally append to the file.`
   [path contents &opt mode]
   (default mode :wb)
-  (def f (file/open path mode))
+  (def f (file-open path mode))
   (if-not f (error (string "could not open file " path " with mode " mode)))
-  (file/write f contents)
-  (file/close f)
+  (file-write f contents)
+  (file-close f)
   nil)
 
 (defdyn *pretty-format*
@@ -1766,7 +1766,7 @@
     (if (= pattern '_) (break))
     (def s (get-sym parent-sym key))
     (def t (type pattern))
-    (def isarr (or (= t :array) (and (= t :tuple) (= (tuple/type pattern) :brackets))))
+    (def isarr (or (= t :array) (and (= t :tuple) (= (tup-type pattern) :brackets))))
     (cond
 
       # match local binding
@@ -1816,7 +1816,7 @@
     (if (= pattern '_) (break))
     (def s (get-sym parent-sym key))
     (def t (type pattern))
-    (def isarr (or (= t :array) (and (= t :tuple) (= (tuple/type pattern) :brackets))))
+    (def isarr (or (= t :array) (and (= t :tuple) (= (tup-type pattern) :brackets))))
     (when isarr
       (arr<- anda (get-length-sym s))
       (def pattern-len
@@ -1885,7 +1885,7 @@
     (unless (empty? preds)
       (def pred-join ~(do ,;defs (and ,;preds)))
       (arr<- anda pred-join))
-    (emit-branch (tuple/slice anda) ['do ;defs expression]))
+    (emit-branch (tup: anda) ['do ;defs expression]))
 
   # Expand branches
   (def stack @[else])
@@ -1925,7 +1925,7 @@
   (def lints (dyn *macro-lints*))
   (when lints
     (def form (dyn *macro-form*))
-    (def [l c] (if (tuple? form) (tuple/sourcemap form) [nil nil]))
+    (def [l c] (if (tuple? form) (tup-sourcemap form) [nil nil]))
     (def l (if-not (= -1 l) l))
     (def c (if-not (= -1 c) c))
     (def msg (string/format fmt ;args))
@@ -1954,7 +1954,7 @@
   (defun expand-bindings [x]
     (case (type x)
       :array (map expand-bindings x)
-      :tuple (tuple/slice (map expand-bindings x))
+      :tuple (tup: (map expand-bindings x))
       :table (dotable x expand-bindings)
       :struct (table/to-struct (dotable x expand-bindings))
       (recur x)))
@@ -1962,36 +1962,36 @@
   (defun expanddef [t]
     (def last (in t (- (length t) 1)))
     (def bound (in t 1))
-    (tuple/slice
+    (tup:
       (arr+
         @[(in t 0) (expand-bindings bound)]
-        (tuple/slice t 2 -2)
+        (tup: t 2 -2)
         @[(recur last)])))
 
   (defun expandall [t]
-    (def args (map recur (tuple/slice t 1)))
+    (def args (map recur (tup: t 1)))
     (tuple (in t 0) ;args))
 
   (defun expandfn [t]
     (def t1 (in t 1))
     (if (symbol? t1)
       (do
-        (def args (map recur (tuple/slice t 3)))
+        (def args (map recur (tup: t 3)))
         (tuple 'fn t1 (in t 2) ;args))
       (do
-        (def args (map recur (tuple/slice t 2)))
+        (def args (map recur (tup: t 2)))
         (tuple 'fn t1 ;args))))
 
   (defun expandqq [t]
     (defun qq [x]
       (case (type x)
-        :tuple (if (= :brackets (tuple/type x))
+        :tuple (if (= :brackets (tup-type x))
                  ~[,;(map qq x)]
                  (do
                    (def x0 (get x 0))
                    (if (= 'unquote x0)
                      (tuple x0 (recur (get x 1)))
-                     (tuple/slice (map qq x)))))
+                     (tup: (map qq x)))))
         :array (map qq x)
         :table (table ;(map qq (kvs x)))
         :struct (struct ;(map qq (kvs x)))
@@ -2019,13 +2019,13 @@
     (def m? (in entry :macro))
     (cond
       s (s t)
-      m? (do (setdyn *macro-form* t) (m ;(tuple/slice t 1)))
-      (tuple/slice (map recur t))))
+      m? (do (setdyn *macro-form* t) (m ;(tup: t 1)))
+      (tup: (map recur t))))
 
   (def ret
     (case (type x)
-      :tuple (if (= (tuple/type x) :brackets)
-               (tuple/brackets ;(map recur x))
+      :tuple (if (= (tup-type x) :brackets)
+               (tup-brackets ;(map recur x))
                (dotup x))
       :array (map recur x)
       :struct (table/to-struct (dotable x recur))
@@ -2076,8 +2076,8 @@
   will not be recursively frozen, but all other types will.`
   [x]
   (case (type x)
-    :array (tuple/slice (map freeze x))
-    :tuple (tuple/slice (map freeze x))
+    :array (tup: (map freeze x))
+    :tuple (tup: (map freeze x))
     :table (if-let [p (table/getproto x)]
              (freeze (merge (table/clone p) x))
              (struct ;(map freeze (kvs x))))
@@ -2110,7 +2110,7 @@
   [name & body]
   (def expansion (apply defun name body))
   (def fbody (last expansion))
-  (def modifiers (tuple/slice expansion 2 -2))
+  (def modifiers (tup: expansion 2 -2))
   (def metadata @{})
   (each m modifiers
     (cond
@@ -2214,7 +2214,7 @@
 ###
 
 # Initialize syspath
-(each [k v] (partition 2 (tuple/slice boot/args 2))
+(each [k v] (partition 2 (tup: boot/args 2))
   (case k
     "JANET_PATH" (setdyn :syspath v)))
 
@@ -2257,8 +2257,8 @@
   [where line col]
   (if-not line (break))
   (unless (string? where) (break))
-  (when-with [f (file/open where :r)]
-    (def source-code (file/read f :all))
+  (when-with [f (file-open where :r)]
+    (def source-code (file-read f :all))
     (var index 0)
     (repeat (dec line)
        (if-not index (break))
@@ -2435,7 +2435,7 @@
 
   (defun produce []
     (def tup (p-produce p true))
-    [(in tup 0) ;(tuple/sourcemap tup)])
+    [(in tup 0) ;(tup-sourcemap tup)])
 
   # Loop
   (def buf @"")
@@ -2634,11 +2634,11 @@
   [path]
   (compif (dyn 'os/stat)
     (= :file (os/stat path :mode))
-    (when-let [f (file/open path :rb)]
+    (when-let [f (file-open path :rb)]
       (def res
-        (try (do (file/read f 1) true)
+        (try (do (file-read f 1) true)
           ([err] nil)))
-      (file/close f)
+      (file-close f)
       res)))
 
 (defun- mod-filter
@@ -2698,7 +2698,7 @@
   (def f (case (type path)
            :core/file path
            :core/stream path
-           (file/open path :rb)))
+           (file-open path :rb)))
   (def path-is-file (= f path))
   (default env (make-env))
   (def spath (string path))
@@ -3037,7 +3037,7 @@
             (delim :italics))
         (do (++ token-length) (buffer/push token b))))
     (endtoken)
-    (tuple/slice tokens))
+    (tup: tokens))
 
   (set parse-blocks (fn parse-blocks [indent]
     (var new-indent indent)
@@ -3310,7 +3310,7 @@
     (def padding (string/repeat " " 20))
     (loop [i :range [0 (length bytecode)]
            :let [instr (bytecode i)]]
-      (prin (if (= (tuple/type instr) :brackets) "*" " "))
+      (prin (if (= (tup-type instr) :brackets) "*" " "))
       (prin (if (= i pc) "> " "  "))
       (prinf "%.20s" (string (string/join (map string instr) " ") padding))
       (when sourcemap
@@ -3548,7 +3548,7 @@
   [src]
   (cond
     (tuple? src)
-    (if (= (tuple/type src) :brackets)
+    (if (= (tup-type src) :brackets)
       (all no-side-effects src))
     (array? src)
     (all no-side-effects src)
@@ -3588,11 +3588,11 @@
       (thunk)
       # Use
       (= 'use head)
-      (use-2 flycheck-evaluator (tuple/slice source 1))
+      (use-2 flycheck-evaluator (tup: source 1))
       # Import-like form
       (importers head)
-      (let [[l c] (tuple/sourcemap source)
-            newtup (tuple/setmap (tuple ;source :evaluator flycheck-evaluator) l c)]
+      (let [[l c] (tup-sourcemap source)
+            newtup (tup-setmap (tuple ;source :evaluator flycheck-evaluator) l c)]
         ((compile newtup env where))))))
 
 (defun flycheck
@@ -3787,9 +3787,9 @@
           (def [line] (parser/where p))
           (string "repl:" line ":" (parser/state p :delimiters) "> "))
         (defun getstdin [prompt buf _]
-          (file/write stdout prompt)
-          (file/flush stdout)
-          (file/read stdin :line buf))
+          (file-write stdout prompt)
+          (file-flush stdout)
+          (file-read stdin :line buf))
         (def env (make-env))
         (when-let [profile.janet (dyn *profilepath*)]
             (def new-env (dofile profile.janet :exit true))
@@ -3851,8 +3851,8 @@
 
 (do
 
-  # Deprecate file/popen
-  (when-let [v (get root-env 'file/popen)]
+  # Deprecate file-popen
+  (when-let [v (get root-env 'file-popen)]
     (put v :deprecated true))
 
   # Modify root-env to remove private symbols and

@@ -795,15 +795,15 @@ void janet_lib_io(JanetTable *env) {
         JANET_CORE_REG("xprinf", cfun_io_xprinf),
         JANET_CORE_REG("flush", cfun_io_flush),
         JANET_CORE_REG("eflush", cfun_io_eflush),
-        JANET_CORE_REG("file/temp", cfun_io_temp),
-        JANET_CORE_REG("file/open", cfun_io_fopen),
-        JANET_CORE_REG("file/close", cfun_io_fclose),
-        JANET_CORE_REG("file/read", cfun_io_fread),
-        JANET_CORE_REG("file/write", cfun_io_fwrite),
-        JANET_CORE_REG("file/flush", cfun_io_fflush),
-        JANET_CORE_REG("file/seek", cfun_io_fseek),
+        JANET_CORE_REG("file-temp", cfun_io_temp),
+        JANET_CORE_REG("file-open", cfun_io_fopen),
+        JANET_CORE_REG("file-close", cfun_io_fclose),
+        JANET_CORE_REG("file-read", cfun_io_fread),
+        JANET_CORE_REG("file-write", cfun_io_fwrite),
+        JANET_CORE_REG("file-flush", cfun_io_fflush),
+        JANET_CORE_REG("file-seek", cfun_io_fseek),
 #ifndef JANET_NO_PROCESSES
-        JANET_CORE_REG("file/popen", cfun_io_popen),
+        JANET_CORE_REG("file-popen", cfun_io_popen),
 #endif
         JANET_REG_END
     };

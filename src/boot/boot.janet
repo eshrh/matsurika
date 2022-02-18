@@ -35,8 +35,8 @@
     (def arglen (length args))
     (def buf (buffer "(" name))
     (while (< index arglen)
-      (buffer/push-string buf " ")
-      (buffer/format buf "%j" (in args index))
+      (buf<-str buf " ")
+      (buf-fmt buf "%j" (in args index))
       (set index (+ index 1)))
     (arr<- modifiers (string buf ")\n\n" docstr))
     # Build return value
@@ -2442,13 +2442,13 @@
   (var parser-not-done true)
   (while parser-not-done
     (if (env :exit) (break))
-    (buffer/clear buf)
+    (buf_ buf)
     (match (chunks buf p)
       :cancel
       (do
         # A :cancel chunk represents a cancelled form in the REPL, so reset.
         (:flush p)
-        (buffer/clear buf))
+        (buf_ buf))
 
       [:source new-where]
       (do
@@ -2502,8 +2502,8 @@
     (def ret state)
     (set state nil)
     (when ret
-      (buffer/push-string buf str)
-      (buffer/push-string buf "\n")))
+      (buf<-str buf str)
+      (buf<-str buf "\n")))
   (var returnval nil)
   (run-context {:chunks chunks
                 :on-compile-error (fn compile-error [msg errf &]
@@ -3016,10 +3016,10 @@
     (defun delim [mode]
       (def d (toggle mode))
       (if-not has-color (+= token-length (length d)))
-      (buffer/push token d))
+      (buf<- token d))
     (defun endtoken []
       (if (first token) (arr<- tokens [(string token) token-length]))
-      (buffer/clear token)
+      (buf_ token)
       (set token-length 0))
     (forv i 0 (length line)
       (def b (get line i))
@@ -3027,7 +3027,7 @@
         (or (= b (chr "\n")) (= b (chr " "))) (endtoken)
         (= b (chr `\`)) (do
                           (++ token-length)
-                          (buffer/push token (get line (++ i))))
+                          (buf<- token (get line (++ i))))
         (= b (chr "_")) (delim :underline)
         (= b (chr "`")) (delim :code)
         (= b (chr "*"))
@@ -3035,7 +3035,7 @@
             (do (++ i)
               (delim :bold))
             (delim :italics))
-        (do (++ token-length) (buffer/push token b))))
+        (do (++ token-length) (buf<- token b))))
     (endtoken)
     (tup: tokens))
 
@@ -3082,11 +3082,11 @@
   (defun emit-indent [indent]
     (def delta (- indent current-column))
     (when (< 0 delta)
-      (buffer/push buf (s* " " delta))
+      (buf<- buf (s* " " delta))
       (set current-column indent)))
 
   (defun emit-nl [&opt indent]
-    (buffer/push buf "\n")
+    (buf<- buf "\n")
     (set current-column 0))
 
   (defun emit-word [word indent &opt len]
@@ -3095,20 +3095,20 @@
             last-byte
             (not= last-byte (chr "\n"))
             (not= last-byte (chr " ")))
-      (buffer/push buf " ")
+      (buf<- buf " ")
       (++ current-column))
     (default len (length word))
     (when (and indent (> (+ 1 current-column len) max-width))
       (emit-nl)
       (emit-indent indent))
-    (buffer/push buf word)
+    (buf<- buf word)
     (+= current-column len))
 
   (defun emit-code
     [code indent]
     (def replacement (string "\n" (s* " " (+ 4 indent))))
     (emit-indent (+ 4 indent))
-    (buffer/push buf (s/>* "\n" replacement code))
+    (buf<- buf (s/>* "\n" replacement code))
     (if (= (chr "\n") (last code))
       (set current-column 0)
       (emit-nl)))

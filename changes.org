@@ -1,4 +1,3 @@
-
 * Conf options
 - =JANET_NO_NET=
 - =JANET_NO_INT_TYPES=
@@ -40,6 +39,23 @@
 - peg/find-all :: peg>*
 - peg/replace :: peg/>
 - peg/replace-all :: peg/>*
+** Buffer
+- buffer/new :: buf-new
+- buffer/new-filled :: buf-new*
+- buffer/fill :: buf*
+- buffer/trim :: buf//
+- buffer/push-byte :: buf<-byte
+- buffer/push-word :: buf<-word
+- buffer/push-string :: buf<-str
+- buffer/push :: buf<-
+- buffer/popn :: buf-popn
+- buffer/clear :: buf_
+- buffer/slice :: buf:
+- buffer/bit-set :: buf-bit-set
+- buffer/bit-clear :: buf-bit_
+- buffer/bit-toggle :: buf-bit-toggle
+- buffer/blit :: buf-blit
+- buffer/format :: buf-fmt
 ** String
 - string/slice :: s:
 - keyword/slice symbol/slice :: key: sym:

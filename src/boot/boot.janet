@@ -161,9 +161,9 @@
        (,error ,(if err err "assert failure")))))
 
 (defun errorf
-  "A combination of error and string/format. Equivalent to (error (string/format fmt ;args))"
+  "A combination of error and s-fmt. Equivalent to (error (s-fmt fmt ;args))"
   [fmt & args]
-  (error (string/format fmt ;args)))
+  (error (s-fmt fmt ;args)))
 
 (defmacro default
   `Define a default value for an optional argument.
@@ -356,7 +356,7 @@
   `Convert a string of length 1 to its byte (ascii) value at compile time.`
   [c]
   (unless (and (string? c) (= (length c) 1))
-    (error (string/format "expected string of length 1, got %v" c)))
+    (error (s-fmt "expected string of length 1, got %v" c)))
   (c 0))
 
 (defmacro label
@@ -1084,7 +1084,7 @@
   "Take the first n elements of a fiber, indexed or bytes type. Returns a new array, tuple or string, respectively."
   [n ind]
   (cond
-    (bytes? ind) (slice-n string/slice n ind)
+    (bytes? ind) (slice-n s: n ind)
     (indexed? ind) (slice-n tup: n ind)
     (take-n-fallback n ind)))
 
@@ -1099,7 +1099,7 @@
   "Same as `(take-while (complement pred) ind)`."
   [pred ind]
   (cond
-    (bytes? ind) (slice-until string/slice pred ind)
+    (bytes? ind) (slice-until s: pred ind)
     (indexed? ind) (slice-until tup: pred ind)
     (take-until-fallback pred ind)))
 
@@ -1114,7 +1114,7 @@
   instance, respectively.``
   [n ind]
   (def use-str (bytes? ind))
-  (def f (if use-str string/slice tup:))
+  (def f (if use-str s: tup:))
   (def len (length ind))
   # make sure start is in [0, len]
   (def m (if (> n 0) n 0))
@@ -1125,7 +1125,7 @@
   "Same as `(drop-while (complement pred) ind)`."
   [pred ind]
   (def use-str (bytes? ind))
-  (def f (if use-str string/slice tup:))
+  (def f (if use-str s: tup:))
   (def i (find-index pred ind))
   (def len (length ind))
   (def start (if (nil? i) len i))
@@ -1186,8 +1186,8 @@
   [x]
   (def [l c] (tup-sourcemap (dyn *macro-form* ())))
   (def cf (dyn *current-file*))
-  (def fmt-1 (if cf (string/format "trace [%s]" cf) "trace"))
-  (def fmt-2 (if (or (neg? l) (neg? c)) ":" (string/format " on line %d, column %d:" l c)))
+  (def fmt-1 (if cf (s-fmt "trace [%s]" cf) "trace"))
+  (def fmt-2 (if (or (neg? l) (neg? c)) ":" (s-fmt " on line %d, column %d:" l c)))
   (def fmt (string fmt-1 fmt-2 " %j is "))
   (def s (gensym))
   ~(upscope
@@ -1645,7 +1645,7 @@
   (var i 0) (var nextn n)
   (def len (length ind))
   (def ret (arr-new (ceil (/ len n))))
-  (def slicer (if (bytes? ind) string/slice tup:))
+  (def slicer (if (bytes? ind) s: tup:))
   (while (<= nextn len)
     (arr<- ret (slicer ind i nextn))
     (set i nextn)
@@ -1920,7 +1920,7 @@
 (defun maclintf
 ======= end
   ``When inside a macro, call this function to add a linter warning. Takes
-  a `fmt` argument like `string/format` which is used to format the message.``
+  a `fmt` argument like `s-fmt` which is used to format the message.``
   [level fmt & args]
   (def lints (dyn *macro-lints*))
   (when lints
@@ -1928,7 +1928,7 @@
     (def [l c] (if (tuple? form) (tup-sourcemap form) [nil nil]))
     (def l (if-not (= -1 l) l))
     (def c (if-not (= -1 c) c))
-    (def msg (string/format fmt ;args))
+    (def msg (s-fmt fmt ;args))
     (arr<- lints [level l c msg]))
   nil)
 
@@ -2154,7 +2154,7 @@
     (set max-param-seen (max max-param-seen num)))
   (defun on-binding
     [x]
-    (if (string/has-prefix? '$ x)
+    (if (s-prefix? '$ x)
       (cond
         (= '$ x)
         (do
@@ -2166,7 +2166,7 @@
           x)
         :else
         (do
-          (def num (scan-number (string/slice x 1)))
+          (def num (scan-number (s: x 1)))
           (if (nat? num)
             (saw-special-arg num))
           x))
@@ -2262,14 +2262,14 @@
     (var index 0)
     (repeat (dec line)
        (if-not index (break))
-       (set index (string/find "\n" source-code index))
-       (if index (++ index)))
+      (set index (s> "\n" source-code index))
+      (if index (++ index)))
     (when index
-      (def line-end (string/find "\n" source-code index))
-      (eprint "  " (string/slice source-code index line-end))
+      (def line-end (s> "\n" source-code index))
+      (eprint "  " (s: source-code index line-end))
       (when col
         (+= index col)
-        (eprint (string/repeat " " (inc col)) "^")))))
+        (eprint (s* " " (inc col)) "^")))))
 
 (defun warn-compile
   "Default handler for a compile warning"
@@ -2579,10 +2579,10 @@
   [image]
   (unmarshal image load-image-dict))
 
-(defun- check-relative [x] (if (string/has-prefix? "." x) x))
-(defun- check-not-relative [x] (if-not (string/has-prefix? "." x) x))
-(defun- check-is-dep [x] (unless (or (string/has-prefix? "/" x) (string/has-prefix? "." x)) x))
-(defun- check-project-relative [x] (if (string/has-prefix? "/" x) x))
+(defun- check-relative [x] (if (s-prefix? "." x) x))
+(defun- check-not-relative [x] (if-not (s-prefix? "." x) x))
+(defun- check-is-dep [x] (unless (or (s-prefix? "/" x) (s-prefix? "." x)) x))
+(defun- check-project-relative [x] (if (s-prefix? "/" x) x))
 
 (def module/cache
   "Table mapping loaded module identifiers to their environments."
@@ -2614,7 +2614,7 @@
   [ext loader]
   (defun- find-prefix
     [pre]
-    (or (find-index |(and (string? ($ 0)) (string/has-prefix? pre ($ 0))) module/paths) 0))
+    (or (find-index |(and (string? ($ 0)) (s-prefix? pre ($ 0))) module/paths) 0))
   (def all-index (find-prefix ".:all:"))
   (arr! module/paths all-index [(string ".:all:" ext) loader check-project-relative])
   (def sys-index (find-prefix ":sys:"))
@@ -2645,7 +2645,7 @@
   [x path]
   (case (type x)
     :nil path
-    :string (string/has-suffix? x path)
+    :string (s-suffix? x path)
     (x path)))
 
 (defun module/find
@@ -2714,7 +2714,7 @@
     (def buf @"")
     (with-dyns [*err* buf *err-color* false]
       (bad-parse x y))
-    (set exit-error (string/slice buf 0 -2)))
+    (set exit-error (s: buf 0 -2)))
   (defun bc [&opt x y z a b]
     (when exit
       (bad-compile x y z a b)
@@ -2723,7 +2723,7 @@
     (def buf @"")
     (with-dyns [*err* buf *err-color* false]
       (bad-compile x nil z a b))
-    (set exit-error (string/slice buf 0 -2))
+    (set exit-error (s: buf 0 -2))
     (set exit-fiber y))
   (unless f
     (error (string "could not find file " path)))
@@ -2815,7 +2815,7 @@
   (def prefix (or
                 (and as (string as "/"))
                 prefix
-                (string (last (string/split "/" path)) "/")))
+                (string (last (s/ "/" path)) "/")))
   (merge-module env newenv prefix ep))
 
 (defmacro import
@@ -2954,7 +2954,7 @@
   (var parse-blocks nil) # mutual recursion
   (defun getslice [from to]
     (def to (min to (length str)))
-    (string/slice str from to))
+    (s: str from to))
   (defun push [x] (arr<- stack x))
 
   (defun parse-list [bullet-check initial indent]
@@ -2980,8 +2980,8 @@
     current-indent)
 
   (defun add-codeblock [indent start end]
-    (def replace-chunk (string "\n" (string/repeat " " indent)))
-    (push @[:cb (string/replace-all replace-chunk "\n" (getslice start end))])
+    (def replace-chunk (string "\n" (s* " " indent)))
+    (push @[:cb (s/>* replace-chunk "\n" (getslice start end))])
     (skipline)
     (skipwhite))
 
@@ -3067,7 +3067,7 @@
   # Handle first line specially for defun, defmacro, etc.
   (when (= (chr "(") (in str 0))
     (skipline)
-    (def first-line (string/slice str 0 (- cursor 1)))
+    (def first-line (s: str 0 (- cursor 1)))
     (def fl-open (if has-color "\e[97m" ""))
     (def fl-close (if has-color "\e[39m" ""))
     (push [[(string fl-open first-line fl-close) (length first-line)]]))
@@ -3082,7 +3082,7 @@
   (defun emit-indent [indent]
     (def delta (- indent current-column))
     (when (< 0 delta)
-      (buffer/push buf (string/repeat " " delta))
+      (buffer/push buf (s* " " delta))
       (set current-column indent)))
 
   (defun emit-nl [&opt indent]
@@ -3106,9 +3106,9 @@
 
   (defun emit-code
     [code indent]
-    (def replacement (string "\n" (string/repeat " " (+ 4 indent))))
+    (def replacement (string "\n" (s* " " (+ 4 indent))))
     (emit-indent (+ 4 indent))
-    (buffer/push buf (string/replace-all "\n" replacement code))
+    (buffer/push buf (s/>* "\n" replacement code))
     (if (= (chr "\n") (last code))
       (set current-column 0)
       (emit-nl)))
@@ -3117,10 +3117,10 @@
     [el indent]
     (emit-indent indent)
     (if (tuple? el)
-      (let [rep (string "\n" (string/repeat " " indent))]
+      (let [rep (string "\n" (s* " " indent))]
         (each [word len] el
           (emit-word
-            (string/replace-all "\n" rep word)
+            (s/>* "\n" rep word)
             indent
             len))
         (emit-nl))
@@ -3131,7 +3131,7 @@
               (each subel (get el i) (emit-node subel (+ 2 indent))))
         :ol (for i 1 (length el)
               (if (> i 1) (emit-indent indent))
-              (def lab (string/format "%d. " i))
+              (def lab (s-fmt "%d. " i))
               (emit-word lab nil)
               (each subel (get el i) (emit-node subel (+ (length lab) indent))))
         :cb (emit-code (get el 1) indent))))
@@ -3148,9 +3148,9 @@
   (def bindings (filter fltr (all-bindings)))
   (def dynamics (map describe (filter fltr (all-dynamics))))
   (print)
-  (print (doc-format (string "Bindings:\n\n" (string/join bindings " "))))
+  (print (doc-format (string "Bindings:\n\n" (s+ bindings " "))))
   (print)
-  (print (doc-format (string "Dynamics:\n\n" (string/join dynamics " "))))
+  (print (doc-format (string "Dynamics:\n\n" (s+ dynamics " "))))
   (print "\n    Use (doc sym) for more information on a binding.\n"))
 
 (defun- print-module-entry
@@ -3187,7 +3187,7 @@
 
   (cond
     (string? sym)
-    (print-index (fn [x] (string/find sym x)))
+    (print-index (fn [x] (s> sym x)))
 
     sym
     (do
@@ -3307,12 +3307,12 @@
     (when-let [constants (dasm :constants)]
       (printf "  constants:  %.4q" constants))
     (printf "  slots:      %.4q\n" (frame :slots))
-    (def padding (string/repeat " " 20))
+    (def padding (s* " " 20))
     (loop [i :range [0 (length bytecode)]
            :let [instr (bytecode i)]]
       (prin (if (= (tup-type instr) :brackets) "*" " "))
       (prin (if (= i pc) "> " "  "))
-      (prinf "%.20s" (string (string/join (map string instr) " ") padding))
+      (prinf "%.20s" (string (s+ (map string instr) " ") padding))
       (when sourcemap
         (let [[sl sc] (sourcemap i)
               loc [sl sc]]
@@ -3392,7 +3392,7 @@
   "An environment that contains dot prefixed functions for debugging."
   @{})
 
-(def- debugger-keys (filter (partial string/has-prefix? ".") (keys root-env)))
+(def- debugger-keys (filter (partial s-prefix? ".") (keys root-env)))
 (each k debugger-keys (put debugger-env k (root-env k)) (put root-env k nil))
 
 ###
@@ -3578,7 +3578,7 @@
       (or
         (safe-forms head)
         (if (symbol? head)
-          (if (string/has-prefix? "define-" head) is-safe-def))))
+          (if (s-prefix? "define-" head) is-safe-def))))
     (cond
       # Sometimes safe form
       (function? safe-check)
@@ -3746,8 +3746,8 @@
   (def lenargs (length args))
   (while (< i lenargs)
     (def arg (in args i))
-    (if (and handleopts (= "-" (string/slice arg 0 1)))
-      (+= i (dohandler (string/slice arg 1) i))
+    (if (and handleopts (= "-" (s: arg 0 1)))
+      (+= i (dohandler (s: arg 1) i))
       (do
         (def subargs (arr: args i))
         (set no-file false)
@@ -3819,8 +3819,8 @@
   "Run as shell command. Prints output, returns stat"
   (def fst (get args 0))
   (if (tuple? fst)
-    ~(os-shell ,(string/join (map string fst) " "))
-    ~(os-shell ,(string/join (map string args) " "))))
+    ~(os-shell ,(s+ (map string fst) " "))
+    ~(os-shell ,(s+ (map string args) " "))))
 
 (defmacro sh-do [& forms]
   "Run multiple forms as shell commands"
@@ -3875,7 +3875,7 @@
       (put flat :source-map nil))
     # Fix directory separators on windows to make image identical between windows and non-windows
     (when-let [sm (get flat :source-map)]
-      (put flat :source-map [(string/replace-all "\\" "/" (sm 0)) (sm 1) (sm 2)]))
+      (put flat :source-map [(s/>* "\\" "/" (sm 0)) (sm 1) (sm 2)]))
     (if (v :private)
       (put root-env k nil)
       (put root-env k flat)))
@@ -3966,7 +3966,7 @@
     (print "\n/* " fname " */")
     (print "#line 0 \"" fname "\"\n")
     (def source (slurp fname))
-    (print (string/replace-all "\r" "" source)))
+    (print (s/>* "\r" "" source)))
 
   (do-one-file feature-header)
 

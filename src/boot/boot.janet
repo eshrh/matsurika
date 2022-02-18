@@ -3843,6 +3843,15 @@
   (def forms (map $ forms))
   ~(map eval ,forms))
 
+
+# File reading functions
+
+(defun file-get [file-path]
+  (let [f (file-open file-path :r)
+        content  (file-read f :all)]
+    (file-close f)
+    content))
+
 ###
 ###
 ### Bootstrap

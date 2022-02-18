@@ -1273,7 +1273,7 @@
   [f form]
   (case (type form)
     :table (walk-dict f form)
-    :struct (table/to-struct (walk-dict f form))
+    :struct (tab-to-struct (walk-dict f form))
     :array (walk-ind f form)
     :tuple (let [x (walk-ind f form)]
              (if (= :parens (tup-type form))
@@ -1956,7 +1956,7 @@
       :array (map expand-bindings x)
       :tuple (tup: (map expand-bindings x))
       :table (dotable x expand-bindings)
-      :struct (table/to-struct (dotable x expand-bindings))
+      :struct (tab-to-struct (dotable x expand-bindings))
       (recur x)))
 
   (defun expanddef [t]
@@ -2028,7 +2028,7 @@
                (tup-brackets ;(map recur x))
                (dotup x))
       :array (map recur x)
-      :struct (table/to-struct (dotable x recur))
+      :struct (tab-to-struct (dotable x recur))
       :table (dotable x recur)
       x))
   ret)
@@ -2060,7 +2060,7 @@
       :tuple (or (not= (length x) (length y)) (some identity (map deep-not= x y)))
       :array (or (not= (length x) (length y)) (some identity (map deep-not= x y)))
       :struct (deep-not= (kvs x) (kvs y))
-      :table (deep-not= (table/to-struct x) (table/to-struct y))
+      :table (deep-not= (tab-to-struct x) (tab-to-struct y))
       :buffer (not= (string x) (string y))
       (not= x y))))
 
@@ -2078,8 +2078,8 @@
   (case (type x)
     :array (tup: (map freeze x))
     :tuple (tup: (map freeze x))
-    :table (if-let [p (table/getproto x)]
-             (freeze (merge (table/clone p) x))
+    :table (if-let [p (tab-getproto x)]
+             (freeze (merge (tab& p) x))
              (struct ;(map freeze (kvs x))))
     :struct (struct ;(map freeze (kvs x)))
     :buffer (string x)
@@ -2224,7 +2224,7 @@
   bindings will not pollute the parent environment.`
   [&opt parent]
   (def parent (if parent parent root-env))
-  (def newenv (table/setproto @{} parent))
+  (def newenv (tab-setproto @{} parent))
   newenv)
 
 <<<<<<< variant A
@@ -2314,7 +2314,7 @@
   is provided, gets the nth prototype of the environment table.`
   [&opt n]
   (var e (fiber/getenv (fiber/current)))
-  (if n (repeat n (if (= nil e) (break)) (set e (table/getproto e))))
+  (if n (repeat n (if (= nil e) (break)) (set e (tab-getproto e))))
   e)
 
 (def- lint-levels
@@ -2798,7 +2798,7 @@
   the modified target environment.`
   [target source &opt prefix export]
   (loop [[k v] :pairs source :when (symbol? k) :when (not (v :private))]
-    (def newv (table/setproto @{:private (not export)} v))
+    (def newv (tab-setproto @{:private (not export)} v))
     (put target (symbol prefix k) newv))
   target)
 
@@ -2848,7 +2848,7 @@
   [pred &opt env local]
   (default env (fiber/getenv (fiber/current)))
   (def envs @[])
-  (do (var e env) (while e (arr<- envs e) (set e (table/getproto e)) (if local (break))))
+  (do (var e env) (while e (arr<- envs e) (set e (tab-getproto e)) (if local (break))))
   (def ret-set @{})
   (loop [envi :in envs
          k :keys envi
@@ -3868,7 +3868,7 @@
   # flatten nested tables.
   (loop [[k v] :in (pairs root-env)
          :when (symbol? k)]
-    (def flat (table/proto-flatten v))
+    (def flat (tab-proto-flatten v))
     (when (boot/config :no-docstrings)
       (put flat :doc nil))
     (when (boot/config :no-sourcemaps)

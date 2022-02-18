@@ -376,14 +376,14 @@ JANET_CORE_FN(cfun_table_proto_flatten,
 /* Load the table module */
 void janet_lib_table(JanetTable *env) {
     JanetRegExt table_cfuns[] = {
-        JANET_CORE_REG("table/new", cfun_table_new),
-        JANET_CORE_REG("table/to-struct", cfun_table_tostruct),
-        JANET_CORE_REG("table/getproto", cfun_table_getproto),
-        JANET_CORE_REG("table/setproto", cfun_table_setproto),
-        JANET_CORE_REG("table/rawget", cfun_table_rawget),
-        JANET_CORE_REG("table/clone", cfun_table_clone),
-        JANET_CORE_REG("table/clear", cfun_table_clear),
-        JANET_CORE_REG("table/proto-flatten", cfun_table_proto_flatten),
+        JANET_CORE_REG("tab-new", cfun_table_new),
+        JANET_CORE_REG("tab-to-struct", cfun_table_tostruct),
+        JANET_CORE_REG("tab-getproto", cfun_table_getproto),
+        JANET_CORE_REG("tab-setproto", cfun_table_setproto),
+        JANET_CORE_REG("tab-rawget", cfun_table_rawget),
+        JANET_CORE_REG("tab&", cfun_table_clone),
+        JANET_CORE_REG("tab_", cfun_table_clear),
+        JANET_CORE_REG("tab-proto-flatten", cfun_table_proto_flatten),
         JANET_REG_END
     };
     janet_core_cfuns_ext(env, NULL, table_cfuns);

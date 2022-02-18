@@ -2632,8 +2632,8 @@
 # Version of fexists that works even with a reduced OS
 (defun- fexists
   [path]
-  (compif (dyn 'os/stat)
-    (= :file (os/stat path :mode))
+  (compif (dyn 'os-stat)
+    (= :file (os-stat path :mode))
     (when-let [f (file-open path :rb)]
       (def res
         (try (do (file-read f 1) true)
@@ -2686,7 +2686,7 @@
   `Evaluate a file, file path, or stream and return the resulting environment. :env, :expander,
   :source, :evaluator, :read, and :parser are passed through to the underlying
   run-context call. If exit is true, any top level errors will trigger a
-  call to (os/exit 1) after printing the error.`
+  call to (os-exit 1) after printing the error.`
   [path &keys
    {:exit exit
     :env env
@@ -2709,7 +2709,7 @@
   (defun bp [&opt x y]
     (when exit
       (bad-parse x y)
-      (os/exit 1))
+      (os-exit 1))
     (put env :exit true)
     (def buf @"")
     (with-dyns [*err* buf *err-color* false]
@@ -2718,7 +2718,7 @@
   (defun bc [&opt x y z a b]
     (when exit
       (bad-compile x y z a b)
-      (os/exit 1))
+      (os-exit 1))
     (put env :exit true)
     (def buf @"")
     (with-dyns [*err* buf *err-color* false]
@@ -2737,7 +2737,7 @@
                                  (when exit
                                    (debug/stacktrace f x "")
                                    (eflush)
-                                   (os/exit 1))
+                                   (os-exit 1))
                                  (put env :exit true)
                                  (set exit-error x)
                                  (set exit-fiber f)))
@@ -2824,7 +2824,7 @@
   (use the :as or :prefix option to set a prefix). If no prefix is provided,
   use the name of the module as a prefix. One can also use :export true
   to re-export the imported symbols. If :exit true is given as an argument,
-  any errors encountered at the top level in the module will cause (os/exit 1)
+  any errors encountered at the top level in the module will cause (os-exit 1)
   to be called. Dynamic bindings will NOT be imported. Use :fresh to bypass the
   module cache.`
   [path & args]
@@ -3619,7 +3619,7 @@
 ###
 
 # conditional compilation for reduced os
-(def- getenv-alias (if-let [entry (in root-env 'os/getenv)] (entry :value) (fn [&])))
+(def- getenv-alias (if-let [entry (in root-env 'os-getenv)] (entry :value) (fn [&])))
 
 (defun- run-main
   [env subargs arg]
@@ -3697,9 +3697,9 @@
                -x level : Set the lint error level - default is "none"
                -- : Stop handling options
              ```)
-           (os/exit 0)
+           (os-exit 0)
            1)
-     "v" (fn [&] (print janet/version "-" janet/build) (os/exit 0) 1)
+     "v" (fn [&] (print janet/version "-" janet/build) (os-exit 0) 1)
      "s" (fn [&] (set raw-stdin true) (set should-repl true) 1)
      "r" (fn [&] (set should-repl true) 1)
      "p" (fn [&] (set exit-on-error false) 1)
@@ -3781,7 +3781,7 @@
       compile-only (flycheck stdin :source :stdin :exit exit-on-error)
       (do
         (if-not quiet
-          (print "matsurika janet: " (os/which) " (" (os/arch) ")"))
+          (print "matsurika janet: " (os-which) " (" (os-arch) ")"))
         (flush)
         (defun getprompt [p]
           (def [line] (parser/where p))
@@ -3819,8 +3819,8 @@
   "Run as shell command. Prints output, returns stat"
   (def fst (get args 0))
   (if (tuple? fst)
-    ~(os/shell ,(string/join (map string fst) " "))
-    ~(os/shell ,(string/join (map string args) " "))))
+    ~(os-shell ,(string/join (map string fst) " "))
+    ~(os-shell ,(string/join (map string args) " "))))
 
 (defmacro sh-do [& forms]
   "Run multiple forms as shell commands"
@@ -3834,7 +3834,7 @@
               (map string args))]
     ~(do
        (def p
-         (os/spawn ,cmd :p {:in :pipe :out :pipe}))
+         (os-spawn ,cmd :p {:in :pipe :out :pipe}))
        (:wait p)
        (:read (p :out) :all))))
 

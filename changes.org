@@ -1,0 +1,88 @@
+
+* Conf options
+- =JANET_NO_NET=
+- =JANET_NO_INT_TYPES=
+- =JANET_NO_EV=
+- =JANET_NO_THREADS=
+
+* Renaming
+** Arrays
+- array/new :: arr-new
+- array/new-filled :: arr-new*
+- array/fill :: arr*
+- array/pop :: arr->
+- array/peek :: arr-peek
+- array/push :: arr<-
+- array/ensure :: arr-ensure
+- array/slice :: arr:
+- array/concat :: arr+
+- array/insert :: arr!
+- array/remove :: arr-
+- array/trim :: arr><
+- array/clear :: arr_
+** Tuples
+- tuple/brackets :: tup-brackets
+- tuple/slice :: tup:
+- tuple/type :: tup-type
+- typle/sourcemap :: tup-sourcemap
+- tuple/setmap :: tup-setmap
+** Tables
+- table/new :: tab-new
+- table/to-struct, table/getproto, table/setproto, table/rawget,
+  table/proto-flatten all
+  changed to tab-
+- table/clone :: tab&
+- table/clear :: tab_
+** PEG
+- peg/compile :: peg-compile
+- peg/match :: peg>!
+- peg/find :: peg>
+- peg/find-all :: peg>*
+- peg/replace :: peg/>
+- peg/replace-all :: peg/>*
+** String
+- string/slice :: s:
+- keyword/slice symbol/slice :: key: sym:
+- string/repeat :: s*
+- string/bytes :: s-bytes
+- string/from-bytes :: s-from-bytes
+- string/ascii-lower :: s_
+- string/ascii-upper :: s^
+- string/reverse :: s>-<
+- string/find :: s>
+- string/find-all :: s>*
+- string/has-prefix? :: s-prefix?
+- string/has-suffix? :: s-suffix?
+- string/replace :: s/>
+- string/replace-all :: s/>*
+- string/split :: s/
+- string/check-set :: s-check-set
+- string/join :: s+
+- string/format :: s-fmt
+- string/trim :: s//
+- string/triml :: s/-
+- string/trimr :: s-/
+** File
+- All file functions have / changed to -
+** Math
+- All functions and constants have =math/= stripped
+- math/next :: next-after
+** Macros
+- defn :: defun
+  
+* Additions
+** Math
+*** Bitwise operations
+- bit-or
+- bit&
+- bit-flip
+- bit^
+- bit-str
+** Shell
++ $ :: run shell command
++ $-do :: run many shell commands
+** Predicates
++ hasone? :: coll has exactly one element
+** File
++ file-get :: read full file and close
+

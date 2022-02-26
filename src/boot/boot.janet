@@ -3845,12 +3845,22 @@
 
 
 # File reading functions
+  # Other
+(defun is-len [coll len]
+  (= (length coll) len))
 
 (defun file-get [file-path]
   (let [f (file-open file-path :r)
         content  (file-read f :all)]
     (file-close f)
     content))
+(defun head
+  [xs]
+  (take (- (length xs) 1) xs))
+
+(defun tail
+  [xs]
+  (drop 1 xs))
 
 ###
 ###

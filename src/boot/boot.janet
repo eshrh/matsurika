@@ -1088,6 +1088,7 @@
     (indexed? ind) (slice-n tup: n ind)
     (take-n-fallback n ind)))
 
+
 (defun- slice-until
   [f pred ind]
   (def len (length ind))
@@ -3812,21 +3813,32 @@
 ###
 ###
 
+# Other
+(defun is-len [coll len]
+  (= (length coll) len))
+
+(defun head
+  [xs]
+  (take (- (length xs) 1) xs))
+
+(defun tail
+  [xs]
+  (drop 1 xs))
 
 # Shell commands
 
-(defmacro sh [& args]
+(defmacro sh-run [& args]
   "Run as shell command. Prints output, returns stat"
   (def fst (get args 0))
   (if (tuple? fst)
     ~(os-shell ,(s+ (map string fst) " "))
     ~(os-shell ,(s+ (map string args) " "))))
 
-(defmacro sh-do [& forms]
+(defmacro sh-run-do [& forms]
   "Run multiple forms as shell commands"
-  ~(do ,;(map sh forms)))
+  ~(do ,;(map sh-run forms)))
 
-(defmacro $ [& args]
+(defmacro sh-run-cmd [& args]
   "Execute program. Returns output string."
   (let [fst (get args 0)
         cmd (if (tuple? fst)
@@ -3838,29 +3850,36 @@
        (:wait p)
        (:read (p :out) :all))))
 
-(defmacro $-do [& forms]
+(defmacro sh-run-cmd-do [& forms]
   "Execute multiple programs"
-  (def forms (map $ forms))
+  (def forms (map sh-run-cmd forms))
   ~(map eval ,forms))
+
+(defmacro $ [& args]
+  (if (= (last args) :sh)
+    ~(sh-run ,(head args))
+    ~(sh-run-cmd ,args)))
+
+(defmacro $* [& forms]
+  (let [lastform (last forms)]
+    (if (and
+          (not (tuple? lastform))
+          (= lastform :sh))
+      ~(sh-run-do ,;(head forms))
+      ~(sh-run-cmd-do ,;forms))))
+
 
 
 # File reading functions
-  # Other
-(defun is-len [coll len]
-  (= (length coll) len))
 
 (defun file-get [file-path]
   (let [f (file-open file-path :r)
         content  (file-read f :all)]
+    (var content (file-read f :all))
     (file-close f)
-    content))
-(defun head
-  [xs]
-  (take (- (length xs) 1) xs))
-
-(defun tail
-  [xs]
-  (drop 1 xs))
+    (if content
+      content
+      (error "file not found"))))
 
 ###
 ###

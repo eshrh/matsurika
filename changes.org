@@ -95,8 +95,10 @@
 - bflip
 - bstr
 ** Shell
-+ $ :: run shell command
-+ $-do :: run many shell commands
++ $ :: run a command, return output
++ $* :: run many commands, return output
++ For either of the previous two commands, if the last arg is :sh,
+  then eval by passing to the system shell. Prints output, returns nil.
 ** Predicates
 + hasone? :: coll has exactly one element
 ** File

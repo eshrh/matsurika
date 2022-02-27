@@ -112,7 +112,8 @@
 - math/next :: next-after
 ** Macros
 - defn :: defun
+** Other
+- reduce2 :: foldl
 ** Not renamed:
 - fiber
 - parser
-  

@@ -851,7 +851,7 @@
   (each el ind (set accum (f accum el)))
   accum)
 
-(defun reduce2
+(defun foldl
   `The 2-argument version of reduce that does not take an initialization value.
   Instead, the first element of the array is used for initialization.`
   [f ind]

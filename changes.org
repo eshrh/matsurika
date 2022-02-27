@@ -21,6 +21,7 @@
 ** File
 + file<- :: read full file and close
 + file-> :: write file and close
++ file+ :: file append and close
 ** Collections
 + is-len :: checks if collection is length
 + head, tail functions

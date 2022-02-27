@@ -3886,6 +3886,11 @@
     (file-write f content)
     (file-close f)))
 
+(defun file+ [file-path content]
+  (let [f (file-open file-path :a+n)]
+    (file-write f)
+    (file-close f)))
+
 # String ops
 (defmacro s:> [str find]
   ~(s: ,str 0 (s> ,find ,str)))

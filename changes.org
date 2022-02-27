@@ -19,8 +19,8 @@
 ** Predicates
 + hasone? :: coll has exactly one element
 ** File
-+ file-get :: read full file and close
-+ file-dump :: write file and close
++ file<- :: read full file and close
++ file-> :: write file and close
 ** Collections
 + is-len :: checks if collection is length
 + head, tail functions

@@ -3875,13 +3875,13 @@
 
 
 # File reading functions
-(defun file-get [file-path]
+(defun file<- [file-path]
   (let [f (file-open file-path :rn)]
     (var content (file-read f :all))
     (file-close f)
     content))
 
-(defun file-dump [file-path content]
+(defun file-> [file-path content]
   (let [f (file-open file-path :wn)]
     (file-write f content)
     (file-close f)))

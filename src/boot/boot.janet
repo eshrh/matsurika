@@ -2195,6 +2195,11 @@
      :A (if-not :a 1)
      :D (if-not :d 1)
      :H (if-not :h 1)
+     :S* (any :S)
+     :W* (any :W)
+     :A* (any :A)
+     :D* (any :D)
+     :H* (any :H)
      :d+ (some :d)
      :a+ (some :a)
      :s+ (some :s)
@@ -3826,7 +3831,6 @@
   (drop 1 xs))
 
 # Shell commands
-
 (defmacro sh-run [& args]
   "Run as shell command. Prints output, returns stat"
   (def fst (get args 0))
@@ -3871,15 +3875,28 @@
 
 
 # File reading functions
-
 (defun file-get [file-path]
-  (let [f (file-open file-path :r)
-        content  (file-read f :all)]
+  (let [f (file-open file-path :rn)]
     (var content (file-read f :all))
     (file-close f)
-    (if content
-      content
-      (error "file not found"))))
+    content))
+
+(defun file-dump [file-path content]
+  (let [f (file-open file-path :wn)]
+    (file-write f content)
+    (file-close f)))
+
+# String ops
+(defmacro s:> [str find]
+  ~(s: ,str 0 (s> ,find ,str)))
+
+(defmacro s>: [str find]
+  ~(s: ,str (s> ,find ,str)))
+
+# PEG helper
+
+(defmacro peg>!* [patt text]
+  ~(map |(peg>! ,patt ,text $) (peg>* ,patt ,text)))
 
 ###
 ###

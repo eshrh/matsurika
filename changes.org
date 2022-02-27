@@ -4,6 +4,32 @@
 - =JANET_NO_EV=
 - =JANET_NO_THREADS=
 
+* Todos
+** TODO better loop macro
+* Additions
+** Math
+*** Bitwise operations
+- bflip
+- bstr
+** Shell
++ $ :: run a command, return output
++ $* :: run many commands, return output
++ For either of the previous two commands, if the last arg is :sh,
+  then eval by passing to the system shell. Prints output, returns nil.
+** Predicates
++ hasone? :: coll has exactly one element
+** File
++ file-get :: read full file and close
++ file-dump :: write file and close
+** Collections
++ is-len :: checks if collection is length
++ head, tail functions
+** Strings
++ s:> :: slice from beginning of string until find (excluding find)
++ s>: :: slice from find (including find) until the end of string
+** PEG
+- peg>!* :: peg match all
+- extra default patterns :: (any) forms for S W A D H.
 * Renaming
 ** Arrays
 - array/new :: arr-new
@@ -89,24 +115,3 @@
 - fiber
 - parser
   
-* Additions
-** Math
-*** Bitwise operations
-- bflip
-- bstr
-** Shell
-+ $ :: run a command, return output
-+ $* :: run many commands, return output
-+ For either of the previous two commands, if the last arg is :sh,
-  then eval by passing to the system shell. Prints output, returns nil.
-** Predicates
-+ hasone? :: coll has exactly one element
-** File
-+ file-get :: read full file and close
-** Collections
-+ is-len :: checks if collection is length
-+ head, tail functions
-* todos
-** TODO one entry point for all sh
-** TODO better loop macro
-

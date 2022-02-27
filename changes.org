@@ -28,6 +28,7 @@
 ** Strings
 + s:> :: slice from beginning of string until find (excluding find)
 + s>: :: slice from find (including find) until the end of string
++ s>:> :: slice from second arg to third arg in first arg
 ** PEG
 - peg>!* :: peg match all
 - extra default patterns :: (any) forms for S W A D H.

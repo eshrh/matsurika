@@ -3872,8 +3872,6 @@
       ~(sh-run-do ,;(head forms))
       ~(sh-run-cmd-do ,;forms))))
 
-
-
 # File reading functions
 (defun file<- [file-path]
   (let [f (file-open file-path :rn)]
@@ -3897,6 +3895,9 @@
 
 (defmacro s>: [str find]
   ~(s: ,str (s> ,find ,str)))
+
+(defmacro s>:> [str fbeg fend]
+  ~(s: ,str (s> ,fend ,str) (s> ,fend ,str)))
 
 # PEG helper
 

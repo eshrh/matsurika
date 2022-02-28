@@ -6,6 +6,8 @@
 
 * Todos
 ** TODO better loop macro
+** TODO general flip function
+
 * Additions
 ** Math
 *** Bitwise operations
@@ -25,6 +27,7 @@
 ** Collections
 + is-len :: checks if collection is length
 + head, tail functions
++ idx :: get with flipped arguments
 ** Strings
 + s:> :: slice from beginning of string until find (excluding find)
 + s>: :: slice from find (including find) until the end of string

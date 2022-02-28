@@ -3899,6 +3899,14 @@
 (defmacro s>:> [str fbeg fend]
   ~(s: ,str (s> ,fend ,str) (s> ,fend ,str)))
 
+(defmacro lines [str]
+  ~(s/ "\n" str))
+
+(defun words [str]
+  (filter |(not (empty? $))
+          (map s// (s/ " " str))))
+
+
 ## PEG helper
 
 (defmacro peg>!* [patt text]
@@ -3909,7 +3917,6 @@
 (defmacro idx [ind ds]
   ~(get ,ds ,ind))
 
-
 ###
 ###
 ### Bootstrap
@@ -3918,94 +3925,94 @@
 
 (do
 
-  # Deprecate file-popen
-  (when-let [v (get root-env 'file-popen)]
-    (put v :deprecated true))
+                                        # Deprecate file-popen
+ (when-let [v (get root-env 'file-popen)]
+   (put v :deprecated true))
 
-  # Modify root-env to remove private symbols and
-  # flatten nested tables.
-  (loop [[k v] :in (pairs root-env)
-  :when (symbol? k)]
-  (def flat (tab-proto-flatten v))
-  (when (boot/config :no-docstrings)
-  (put flat :doc nil))
-  (when (boot/config :no-sourcemaps)
-  (put flat :source-map nil))
-  # Fix directory separators on windows to make image identical between windows and non-windows
-  (when-let [sm (get flat :source-map)]
-  (put flat :source-map [(s/>* "\\" "/" (sm 0)) (sm 1) (sm 2)]))
-  (if (v :private)
-  (put root-env k nil)
-  (put root-env k flat)))
-  (put root-env 'boot/config nil)
-  (put root-env 'boot/args nil)
+                                        # Modify root-env to remove private symbols and
+                                        # flatten nested tables.
+ (loop [[k v] :in (pairs root-env)
+        :when (symbol? k)]
+       (def flat (tab-proto-flatten v))
+       (when (boot/config :no-docstrings)
+         (put flat :doc nil))
+       (when (boot/config :no-sourcemaps)
+         (put flat :source-map nil))
+                                        # Fix directory separators on windows to make image identical between windows and non-windows
+       (when-let [sm (get flat :source-map)]
+         (put flat :source-map [(s/>* "\\" "/" (sm 0)) (sm 1) (sm 2)]))
+       (if (v :private)
+           (put root-env k nil)
+         (put root-env k flat)))
+ (put root-env 'boot/config nil)
+ (put root-env 'boot/args nil)
 
-  # Build dictionary for loading images
-  (def load-dict (env-lookup root-env))
-  (each [k v] (pairs load-dict)
-  (if (number? v) (put load-dict k nil)))
-  (merge-into load-image-dict load-dict)
+                                        # Build dictionary for loading images
+ (def load-dict (env-lookup root-env))
+ (each [k v] (pairs load-dict)
+       (if (number? v) (put load-dict k nil)))
+ (merge-into load-image-dict load-dict)
 
-  (def image
-  (let [env-pairs (pairs (env-lookup root-env))
-  essential-pairs (filter (fn [[k v]] (or (cfunction? v) (abstract? v))) env-pairs)
-  lookup (table ;(mapcat identity essential-pairs))
-  reverse-lookup (invert lookup)]
-  # Check no duplicate values
-  (def temp @{})
-  (eachp [k v] lookup
-  (if (in temp v) (errorf "duplicate value: %v" v))
-  (put temp v k))
-  (marshal root-env reverse-lookup)))
+ (def image
+      (let [env-pairs (pairs (env-lookup root-env))
+                      essential-pairs (filter (fn [[k v]] (or (cfunction? v) (abstract? v))) env-pairs)
+                      lookup (table ;(mapcat identity essential-pairs))
+                      reverse-lookup (invert lookup)]
+                                        # Check no duplicate values
+        (def temp @{})
+        (eachp [k v] lookup
+               (if (in temp v) (errorf "duplicate value: %v" v))
+               (put temp v k))
+        (marshal root-env reverse-lookup)))
 
-  # Create amalgamation
+                                        # Create amalgamation
 
-  (def feature-header "src/core/features.h")
+ (def feature-header "src/core/features.h")
 
-  (def local-headers
-  ["src/core/state.h"
-  "src/core/util.h"
-  "src/core/gc.h"
-  "src/core/vector.h"
-  "src/core/fiber.h"
-  "src/core/regalloc.h"
-  "src/core/compile.h"
-  "src/core/emit.h"
-  "src/core/symcache.h"])
+ (def local-headers
+      ["src/core/state.h"
+       "src/core/util.h"
+       "src/core/gc.h"
+       "src/core/vector.h"
+       "src/core/fiber.h"
+       "src/core/regalloc.h"
+       "src/core/compile.h"
+       "src/core/emit.h"
+       "src/core/symcache.h"])
 
-  (def core-sources
-  ["src/core/abstract.c"
-  "src/core/array.c"
-  "src/core/asm.c"
-  "src/core/buffer.c"
-  "src/core/bytecode.c"
-  "src/core/capi.c"
-  "src/core/cfuns.c"
-  "src/core/compile.c"
-  "src/core/corelib.c"
-  "src/core/debug.c"
-  "src/core/emit.c"
-  "src/core/ev.c"
-  "src/core/fiber.c"
-  "src/core/gc.c"
-  "src/core/inttypes.c"
-  "src/core/io.c"
-  "src/core/marsh.c"
-  "src/core/math.c"
-  "src/core/net.c"
-  "src/core/os.c"
-  "src/core/parse.c"
-  "src/core/peg.c"
-  "src/core/pp.c"
-  "src/core/regalloc.c"
-  "src/core/run.c"
-  "src/core/specials.c"
-  "src/core/state.c"
-  "src/core/string.c"
-  "src/core/strtod.c"
-  "src/core/struct.c"
-  "src/core/symcache.c"
-  "src/core/table.c"
+ (def core-sources
+      ["src/core/abstract.c"
+       "src/core/array.c"
+       "src/core/asm.c"
+       "src/core/buffer.c"
+       "src/core/bytecode.c"
+       "src/core/capi.c"
+       "src/core/cfuns.c"
+       "src/core/compile.c"
+       "src/core/corelib.c"
+       "src/core/debug.c"
+       "src/core/emit.c"
+       "src/core/ev.c"
+       "src/core/fiber.c"
+       "src/core/gc.c"
+       "src/core/inttypes.c"
+       "src/core/io.c"
+       "src/core/marsh.c"
+       "src/core/math.c"
+       "src/core/net.c"
+       "src/core/os.c"
+       "src/core/parse.c"
+       "src/core/peg.c"
+       "src/core/pp.c"
+       "src/core/regalloc.c"
+       "src/core/run.c"
+       "src/core/specials.c"
+       "src/core/state.c"
+       "src/core/string.c"
+       "src/core/strtod.c"
+       "src/core/struct.c"
+       "src/core/symcache.c"
+       "src/core/table.c"
        "src/core/tuple.c"
        "src/core/util.c"
        "src/core/value.c"

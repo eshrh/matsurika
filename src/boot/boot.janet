@@ -3830,48 +3830,6 @@
   [xs]
   (drop 1 xs))
 
-# Shell commands
-(defmacro sh-run [& args]
-  "Run as shell command. Prints output, returns stat"
-  (def fst (get args 0))
-  (if (tuple? fst)
-    ~(os-shell ,(s+ (map string fst) " "))
-    ~(os-shell ,(s+ (map string args) " "))))
-
-(defmacro sh-run-do [& forms]
-  "Run multiple forms as shell commands"
-  ~(do ,;(map sh-run forms)))
-
-(defmacro sh-run-cmd [& args]
-  "Execute program. Returns output string."
-  (let [fst (get args 0)
-        cmd (if (tuple? fst)
-              (map string fst)
-              (map string args))]
-    ~(do
-       (def p
-         (os-spawn ,cmd :p {:in :pipe :out :pipe}))
-       (:wait p)
-       (:read (p :out) :all))))
-
-(defmacro sh-run-cmd-do [& forms]
-  "Execute multiple programs"
-  (def forms (map sh-run-cmd forms))
-  ~(map eval ,forms))
-
-(defmacro $ [& args]
-  (if (= (last args) :sh)
-    ~(sh-run ,(head args))
-    ~(sh-run-cmd ,args)))
-
-(defmacro $* [& forms]
-  (let [lastform (last forms)]
-    (if (and
-          (not (tuple? lastform))
-          (= lastform :sh))
-      ~(sh-run-do ,;(head forms))
-      ~(sh-run-cmd-do ,;forms))))
-
 # File reading functions
 (defun file<- [file-path]
   (let [f (file-open file-path :rn)]
@@ -3900,7 +3858,7 @@
   ~(s: ,str (s> ,fend ,str) (s> ,fend ,str)))
 
 (defmacro lines [str]
-  ~(s/ "\n" str))
+  ~(s/ "\n" ,str))
 
 (defun words [str]
   (filter |(not (empty? $))
@@ -3916,6 +3874,50 @@
 
 (defmacro idx [ind ds]
   ~(get ,ds ,ind))
+
+
+# Shell commands
+(defmacro sh-run [& args]
+  "Run as shell command. Prints output, returns stat"
+  (def fst (get args 0))
+  (if (tuple? fst)
+    ~(os-shell ,(s+ (map string fst) " "))
+    ~(os-shell ,(s+ (map string args) " "))))
+
+(defmacro sh-run-do [& forms]
+  "Run multiple forms as shell commands"
+  ~(do ,;(map sh-run forms)))
+
+(defmacro sh-run-cmd [& args]
+  "Execute program. Returns output string."
+  (let [fst (get args 0)
+        cmd (if (tuple? fst)
+              (map string fst)
+              (map string args))]
+    ~(lines (do
+             (def p
+                  (os-spawn ,cmd :p {:in :pipe :out :pipe}))
+             (:wait p)
+             (:read (p :out) :all)))))
+
+(defmacro sh-run-cmd-do [& forms]
+  "Execute multiple programs"
+  (def forms (map sh-run-cmd forms))
+  ~(map eval ,forms))
+
+(defmacro $ [& args]
+  (if (= (last args) :sh)
+    ~(sh-run ,(head args))
+    ~(sh-run-cmd ,args)))
+
+(defmacro $* [& forms]
+  (let [lastform (last forms)]
+    (if (and
+          (not (tuple? lastform))
+          (= lastform :sh))
+      ~(sh-run-do ,;(head forms))
+      ~(sh-run-cmd-do ,;forms))))
+
 
 ###
 ###

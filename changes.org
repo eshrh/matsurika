@@ -27,7 +27,7 @@
 ** Collections
 + is-len :: checks if collection is length
 + head, tail functions
-+ idx :: get with flipped arguments
++ idx :: get with flipped arguments. supports negative indexing
 ** Strings
 + s:> :: slice from beginning of string until find (excluding find)
 + s>: :: slice from find (including find) until the end of string

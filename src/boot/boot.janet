@@ -3872,11 +3872,17 @@
 
 ## Flipped indexing
 
-(defmacro idx [ind ds]
-  ~(get ,ds ,ind))
+(defun flip [f]
+  (fn [& args]
+      (apply f (reverse args))))
 
+(defun idx [k ds]
+  (if (pos? k)
+      (get ds k)
+    (get ds (+ (length ds) k))))
 
-# Shell commands
+## Shell commands
+
 (defmacro sh-run [& args]
   "Run as shell command. Prints output, returns stat"
   (def fst (get args 0))

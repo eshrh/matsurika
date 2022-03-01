@@ -1911,15 +1911,11 @@
 ###
 ###
 
-<<<<<<< variant A
 (defdyn *macro-lints*
-  "Bound to an array of lint messgae that will be reported by the compiler inside a macro.
+        "Bound to an array of lint messgae that will be reported by the compiler inside a macro.
   To indicate an error or warning, a macro author should use `maclintf`.")
 
-(defn maclintf
->>>>>>> variant B
 (defun maclintf
-======= end
   ``When inside a macro, call this function to add a linter warning. Takes
   a `fmt` argument like `s-fmt` which is used to format the message.``
   [level fmt & args]
@@ -2233,14 +2229,10 @@
   (def newenv (tab-setproto @{} parent))
   newenv)
 
-<<<<<<< variant A
 (defdyn *err-color*
-  "Whether or not to turn on error coloring in stacktraces and other error messages.")
+        "Whether or not to turn on error coloring in stacktraces and other error messages.")
 
-(defn bad-parse
->>>>>>> variant B
 (defun bad-parse
-======= end
   "Default handler for a parse error."
   [p where]
   (def ec (dyn *err-color*))
@@ -2876,18 +2868,14 @@
   [&opt env local]
   (env-walk keyword? env local))
 
-<<<<<<< variant A
 (defdyn *doc-width*
-  "Width in columns to print documentation printed with `doc-format`")
+        "Width in columns to print documentation printed with `doc-format`")
 
 (defdyn *doc-color*
   "Whether or not to colorize documentation printed with `doc-format`.")
 
-(defn doc-format
->>>>>>> variant B
 (defun doc-format
-======= end
-  `Reformat a docstring to wrap a certain width. Docstrings can either be plaintext
+    `Reformat a docstring to wrap a certain width. Docstrings can either be plaintext
   or a subset of markdown. This allows a long single line of prose or formatted text to be
   a well-formed docstring. Returns a buffer containing the formatted text.`
   [str &opt width indent colorize]
@@ -2895,20 +2883,20 @@
   (default indent 4)
   (def max-width (- (or width (dyn *doc-width* 80)) 8))
   (def has-color (if (not= nil colorize)
-                   colorize
+                     colorize
                    (dyn *doc-color*)))
 
-  # Terminal codes for emission/tokenization
+                                        # Terminal codes for emission/tokenization
   (def delimiters
-    (if has-color
-      {:underline ["\e[4m" "\e[24m"]
-       :code ["\e[97m" "\e[39m"]
-       :italics ["\e[4m" "\e[24m"]
-       :bold ["\e[1m" "\e[22m"]}
-      {:underline ["_" "_"]
-       :code ["`" "`"]
-       :italics ["*" "*"]
-       :bold ["**" "**"]}))
+       (if has-color
+           {:underline ["\e[4m" "\e[24m"]
+           :code ["\e[97m" "\e[39m"]
+           :italics ["\e[4m" "\e[24m"]
+           :bold ["\e[1m" "\e[22m"]}
+           {:underline ["_" "_"]
+           :code ["`" "`"]
+           :italics ["*" "*"]
+           :bold ["**" "**"]}))
   (def modes @{})
   (defun toggle [mode]
     (def active (get modes mode))
@@ -2916,16 +2904,16 @@
     (put modes mode (not active))
     (delims (if active 1 0)))
 
-  # Parse state
+                                        # Parse state
   (var cursor 0) # indexes into string for parsing
   (var stack @[])  # return value for this block.
 
-  # Traversal helpers
+                                        # Traversal helpers
   (defun c [] (get str cursor))
   (defun cn [n] (get str (+ n cursor)))
   (defun c++ [] (let [ret (get str cursor)] (++ cursor) ret))
   (defun c+=n [n] (let [ret (get str cursor)] (+= cursor n) ret))
-  # skip* functions return number of characters matched and advance the cursor.
+                                        # skip* functions return number of characters matched and advance the cursor.
   (defun skipwhite []
     (def x cursor)
     (while (= (c) (chr " ")) (++ cursor))
@@ -2936,26 +2924,26 @@
     (c++)
     (- cursor x))
 
-  # Detection helpers - return number of characters matched
+                                        # Detection helpers - return number of characters matched
   (defun ul? []
     (let [x (c) x1 (cn 1)]
       (and
-        (= x1 (chr " "))
-        (or (= x (chr "*")) (= x (chr "-")))
-        2)))
+       (= x1 (chr " "))
+       (or (= x (chr "*")) (= x (chr "-")))
+       2)))
   (defun ol? []
     (def old cursor)
     (while (and (>= (c) (chr "0")) (<= (c) (chr "9"))) (c++))
     (let [c1 (c) c2 (cn 1) c* cursor]
       (set cursor old)
       (if (and (= c1 (chr ".")) (= c2 (chr " ")))
-        (- c* cursor -2))))
+          (- c* cursor -2))))
   (defun fcb? [] (if (= (chr "`") (c) (cn 1) (cn 2)) 3))
   (defun nl? [] (= (chr "\n") (c)))
 
-  # Parse helper
-  # parse-* functions push nodes to `stack`, and return
-  # the indentation they leave the cursor on.
+                                        # Parse helper
+                                        # parse-* functions push nodes to `stack`, and return
+                                        # the indentation they leave the cursor on.
 
   (var parse-blocks nil) # mutual recursion
   (defun getslice [from to]
@@ -2970,9 +2958,9 @@
     (var current-indent indent)
     (while (and (c) (>= current-indent indent))
       (def item-indent
-        (when-let [x (bullet-check)]
-          (c+=n x)
-          (+ indent (skipwhite) x)))
+           (when-let [x (bullet-check)]
+             (c+=n x)
+             (+ indent (skipwhite) x)))
       (unless item-indent
         (set current-indent (skipwhite))
         (break))
@@ -3607,13 +3595,13 @@
   arbitrary execution is possible. Other arguments are the same as dofile. `path` can also be
   a file value such as stdin. Returns nil.``
   [path &keys kwargs]
-  (def old-modcache (table/clone module/cache))
-  (table/clear module/cache)
+  (def old-modcache (tab& module/cache))
+  (tab_ module/cache)
   (try
     (dofile path :evaluator flycheck-evaluator ;(kvs kwargs))
     ([e f]
      (debug/stacktrace f e "")))
-  (table/clear module/cache)
+  (tab_ module/cache)
   (merge-into module/cache old-modcache)
   nil)
 
@@ -3634,9 +3622,8 @@
     (let [thunk (compile [main ;subargs] env arg)]
       (if (function? thunk) (thunk) (error (thunk :error))))))
 
-<<<<<<< variant A
 (defdyn *args*
-  "Dynamic bindings that will contain command line arguments at program start")
+        "Dynamic bindings that will contain command line arguments at program start")
 
 (defdyn *executable*
   "Name of the interpreter executable used to execute this program. Corresponds to argv[0] in the call to
@@ -3645,10 +3632,7 @@
 (defdyn *profilepath*
   "Path to profile file loaded when starting up the repl.")
 
-(defn cli-main
->>>>>>> variant B
 (defun cli-main
-======= end
   `Entrance for the Janet CLI tool. Call this function with the command line
   arguments as an array or tuple of strings to invoke the CLI interface.`
   [args]
@@ -3818,7 +3802,7 @@
 ###
 ###
 
-# Other
+## Other
 (defun is-len [coll len]
   (= (length coll) len))
 
@@ -3830,7 +3814,7 @@
   [xs]
   (drop 1 xs))
 
-# File reading functions
+## File reading functions
 (defun file<- [file-path]
   (let [f (file-open file-path :rn)]
     (var content (file-read f :all))
@@ -3847,7 +3831,7 @@
     (file-write f)
     (file-close f)))
 
-# String ops
+## String ops
 (defmacro s:> [str find]
   ~(s: ,str 0 (s> ,find ,str)))
 

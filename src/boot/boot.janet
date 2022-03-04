@@ -3831,6 +3831,46 @@
     (file-write f)
     (file-close f)))
 
+(defmacro file-each-line [file & forms]
+  "execute forms on each line of file. variable
+line contains line as string."
+  ~(do
+    (var line (file-read ,file :line))
+    (while line
+      ,;forms
+      (set line (file-read ,file :line)))))
+
+(defun list-replace [pred to-func form]
+  (tuple ;(map (fn [el]
+                 (cond (pred el) (to-func el)
+                       (tuple? el) (list-replace pred to-func el)
+                       el))
+               form)))
+
+(defmacro awk-dispatch [code rawline]
+  (def code (list-replace (fn [el] (s-prefix? "_" (string el)))
+                          (fn [el] (tuple 'f (s->n (tail (string el)))))
+                          code))
+  ~(let [line (s// ,rawline)
+         wds (words line)
+         wdsn (map s->n wds)
+         f (fn [i] (get wds i))
+         n (fn [i] (s->n (f i)))
+         NF (length wds)]
+     ,code))
+
+(defun awk
+  [data file]
+  (var res @[])
+  (def f (file-open file))
+  (file-each-line
+   f
+   (each action (pairs data)
+         (let [[patt code] action]
+           (if (peg>! patt line)
+             (arr<- res (eval ~(awk-dispatch ,code ,line)))))))
+  res)
+
 ## String ops
 (defmacro s:> [str find]
   ~(s: ,str 0 (s> ,find ,str)))

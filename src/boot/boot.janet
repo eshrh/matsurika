@@ -3814,6 +3814,12 @@
   [xs]
   (drop 1 xs))
 
+(defun fst [ds]
+  (first ds))
+
+(defun snd [ds]
+  (get ds 1))
+
 ## File reading functions
 (defun file<- [file-path]
   (let [f (file-open file-path :rn)]

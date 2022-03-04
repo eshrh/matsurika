@@ -24,10 +24,21 @@
 + file<- :: read full file and close
 + file-> :: write file and close
 + file+ :: file append and close
++ file-each-line :: takes file pointer f and a list of forms, executes
+  all forms on every line of the file.
++ awk :: accepts a table of actions and a file name (string). Table
+  should have PEGs as keys and a single form as a value. Form is run
+  on every line of the file that matches the PEG, results are
+  collected and returned as an array. The form has access to NF (num
+  fields), the function f which gets a field (shorthand _), n which gets a field and
+  reads it as a number, wds a list of words, wdsn a list of words as
+  numbers, and finally line which is the line after trimming.
 ** Collections
 + is-len :: checks if collection is length
 + head, tail functions
 + idx :: get with flipped arguments. supports negative indexing
++ fst :: first
++ snd :: second
 ** Strings
 + s:> :: slice from beginning of string until find (excluding find)
 + s>: :: slice from find (including find) until the end of string

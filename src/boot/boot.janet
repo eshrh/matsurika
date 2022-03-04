@@ -2163,7 +2163,7 @@
           x)
         :else
         (do
-          (def num (scan-number (s: x 1)))
+          (def num (s->n (s: x 1)))
           (if (nat? num)
             (saw-special-arg num))
           x))
@@ -3658,7 +3658,7 @@
   (defun- get-lint-level
     [i]
     (def x (in args (+ i 1)))
-    (or (scan-number x) (keyword x)))
+    (or (s->n x) (keyword x)))
 
   # Flag handlers
   (def handlers

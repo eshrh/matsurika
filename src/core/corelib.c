@@ -964,7 +964,7 @@ static void janet_load_libs(JanetTable *env) {
         JANET_CORE_REG("abstract?", janet_core_is_abstract),
         JANET_CORE_REG("table", janet_core_table),
         JANET_CORE_REG("array", janet_core_array),
-        JANET_CORE_REG("scan-number", janet_core_scannumber),
+        JANET_CORE_REG("s->n", janet_core_scannumber),
         JANET_CORE_REG("tuple", janet_core_tuple),
         JANET_CORE_REG("struct", janet_core_struct),
         JANET_CORE_REG("gensym", janet_core_gensym),

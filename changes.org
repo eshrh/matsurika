@@ -120,6 +120,7 @@
 - defn :: defun
 ** Other
 - reduce2 :: foldl
+- scan-number :: s->n
 ** Not renamed:
 - fiber
 - parser

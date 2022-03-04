@@ -42,6 +42,10 @@
     (modify-syntax-entry ?@ "_" table)
     (modify-syntax-entry ?\; "_" table)
     (modify-syntax-entry ?* "_" table)
+
+    (modify-syntax-entry ?\{ "(}")
+    (modify-syntax-entry ?\} "){")
+    
     table))
 
 (defconst matsurika-symbol '(one-or-more (or (syntax word) (syntax symbol)))
@@ -180,7 +184,7 @@ the syntax table, so `forward-word' works as expected.")
   (put 'if 'lisp-indent-function 2))
 
 ;;;###autoload
-(define-derived-mode matsurika-mode lisp-data-mode "matsurika"
+(define-derived-mode matsurika-mode clojure-mode "matsurika"
   "Major mode for the matsurika flavor of the matsurika language"
   :syntax-table matsurika-mode-syntax-table
   (setq-local font-lock-defaults '(matsurika-highlights))
@@ -189,7 +193,8 @@ the syntax table, so `forward-word' works as expected.")
   (setq-local comment-use-syntax t)
   (setq-local comment-end "")
   (setq-local imenu-generic-expression matsurika-imenu-generic-expression)
-  (matsurika--set-indent))
+  (matsurika--set-indent)
+  )
 
 
 ;;;###autoload

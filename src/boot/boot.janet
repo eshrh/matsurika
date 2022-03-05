@@ -4007,6 +4007,34 @@ _<number>: shorthand for (f <number>)"
       ~(sh-run-do ,;(head forms))
       ~(sh-run-cmd-do ,;forms))))
 
+## Docs
+(defun doc*
+  "Return docstring for symbol"
+  [&opt sym]
+
+  (cond
+    (string? sym)
+    (print-index (fn [x] (s> sym x)))
+
+    sym
+    (do
+      (def x (dyn sym))
+      (if (not x)
+        (if (index-of sym '[break def do fn if quasiquote quote
+                            set splice unquote upscope var while])
+          (print-special-form-entry sym)
+          (do
+            (def [fullpath mod-kind] (module/find (string sym)))
+            (if-let [mod-env (in module/cache fullpath)]
+              (print-module-entry {:module     true
+                                   :kind       mod-kind
+                                   :source-map [fullpath nil nil]
+                                   :doc        (in mod-env :doc)})
+              (print "symbol " sym " not found."))))
+        (print-module-entry x)))
+
+    # else
+    (print-index identity)))
 
 ###
 ###

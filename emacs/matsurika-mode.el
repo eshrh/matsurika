@@ -180,8 +180,35 @@ the syntax table, so `forward-word' works as expected.")
     (,matsurika-keyword-pattern . (1 font-lock-builtin-face))
     (,matsurika-shorthand-pattern . (1 font-lock-keyword-face))))
 
+(defun matsurika--generate-builtin-ht ()
+  (load-file "./docs.txt")
+  (setq mts-ht (make-hash-table :test #'equal))
+  (cl-loop for doc in mts-docs
+           do (puthash (car doc) (cdr doc) mts-ht)))
+
+(defun company-matsurika-builtins (command &optional arg &rest ignored)
+  (interactive (list 'interactive))
+  (cl-case command
+    (interactive (company-begin-backend 'company-matsurika-builtins))
+    (prefix (when (eq major-mode 'matsurika-mode)
+              (company-grab-symbol)))
+    (candidates (cl-remove-if-not
+                 (lambda (c) (string-prefix-p arg c))
+                 (hash-table-keys mts-ht)))
+    (meta (format (gethash arg mts-ht)))))
+
 (defun matsurika--set-indent ()
   (put 'if 'lisp-indent-function 2))
+
+(defun matsurika-mode-get-docs ()
+  (interactive)
+  (message "%s"
+           (gethash (thing-at-point 'symbol) mts-ht)))
+
+(defvar matsurika-mode-map
+  (let ((map (make-keymap)))
+    (define-key map (kbd "C-c C-d") #'matsurika-mode-get-docs)
+    map))
 
 ;;;###autoload
 (define-derived-mode matsurika-mode clojure-mode "matsurika"
@@ -194,7 +221,8 @@ the syntax table, so `forward-word' works as expected.")
   (setq-local comment-end "")
   (setq-local imenu-generic-expression matsurika-imenu-generic-expression)
   (matsurika--set-indent)
-  )
+  (add-to-list 'company-backends #'company-matsurika-builtins)
+  (use-local-map matsurika-mode-map))
 
 
 ;;;###autoload

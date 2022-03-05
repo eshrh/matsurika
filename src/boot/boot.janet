@@ -3803,50 +3803,69 @@
 ###
 
 ## Other
-(defun is-len? [coll len]
+(defun is-len?
+  "Checks if COLL is LEN"
+  [coll len]
   (= (length coll) len))
 
 (defun head
+  "Gets all but the last element of XS"
   [xs]
   (take (- (length xs) 1) xs))
 
 (defun tail
+  "Gets all but the first element of XS"
   [xs]
   (drop 1 xs))
 
-(defun fst [ds]
+(defun fst
+  "Gets the first element of DS"
+  [ds]
   (first ds))
 
-(defun snd [ds]
+(defun snd
+  "Gets the second element of DS"
+  [ds]
   (get ds 1))
 
 ## File reading functions
-(defun file<- [file-path]
+(defun file<-
+  "Read all the data of a file, return a string"
+  [file-path]
   (let [f (file-open file-path :rn)]
     (var content (file-read f :all))
     (file-close f)
     content))
 
-(defun file-> [file-path content]
+(defun file->
+  "Dump to file-path a string content"
+  [file-path content]
   (let [f (file-open file-path :wn)]
     (file-write f content)
     (file-close f)))
 
-(defun file+ [file-path content]
+(defun file+
+  "Append to file-path a string content"
+  [file-path content]
   (let [f (file-open file-path :a+n)]
     (file-write f)
     (file-close f)))
 
-(defmacro file-each-line [file & forms]
-  "execute forms on each line of file. variable
+(defmacro file-each-line
+  "Execute forms on each line of file. variable
 line contains line as string."
+  [file & forms]
   ~(do
     (var line (file-read ,file :line))
     (while line
       ,;forms
       (set line (file-read ,file :line)))))
 
-(defun list-replace [pred to-func form]
+(defun list-replace
+  "Replace all elements of a tuple. PRED is a predicate that if t
+decides to replace the element. TO-FUNC is a function that returns what to replace
+the element with. Both functions take a single argument, the element."
+  [pred to-func form]
   (tuple ;(map (fn [el]
                  (cond (pred el) (to-func el)
                        (tuple? el) (list-replace pred to-func el)
@@ -3866,6 +3885,16 @@ line contains line as string."
      ,code))
 
 (defun awk
+  "Execute actions on every line of a file (object).
+First arg is a table, key is a peg and value is a single form to be run on every
+line that the peg matches. Forms have access to several variables:
+line: trimmed line
+wds: line split by whitespace
+wdsn: words of the line, all converted to numbers
+f: a function to get the nth field of the line
+n: a function to get the nth field of the line, as a number
+NF: number of fields
+_<number>: shorthand for (f <number>)"
   [data file]
   (var res @[])
   (def f (file-open file))
@@ -3878,54 +3907,73 @@ line contains line as string."
   res)
 
 ## String ops
-(defmacro s:> [str find]
+(defmacro s:>
+  "Slice STR from beginning until FIND"
+  [str find]
   ~(s: ,str 0 (s> ,find ,str)))
 
-(defmacro s>: [str find]
+(defmacro s>:
+  "Slice STR from FIND until end"
+  [str find]
   ~(s: ,str (s> ,find ,str)))
 
-(defmacro s>:> [str fbeg fend]
+(defmacro s>:>
+  "Slice STR from FBEG until FEND"
+  [str fbeg fend]
   ~(s: ,str (s> ,fend ,str) (s> ,fend ,str)))
 
-(defmacro lines [str]
+(defmacro lines
+  "Split string by \n"
+  [str]
   ~(s/ "\n" ,str))
 
-(defun words [str]
+(defun words
+  "Split string by any amount of spaces"
+  [str]
   (filter |(not (empty? $))
           (map s// (s/ " " str))))
 
 
 ## PEG helper
 
-(defmacro peg>!* [patt text]
+(defmacro peg>!*
+  "Get all matching peg text matching PATT in TEXT"
+  [patt text]
   ~(map |(peg>! ,patt ,text $) (peg>* ,patt ,text)))
 
 ## Flipped indexing
 
-(defun flip [f]
+(defun flip
+  "Return a new function with the args flipped"
+  [f]
   (fn [& args]
       (apply f (reverse args))))
 
-(defun idx [k ds]
+(defun idx
+  "Index k'th item of ds"
+  [k ds]
   (if (pos? k)
       (get ds k)
     (get ds (+ (length ds) k))))
 
 ## Shell commands
 
-(defmacro sh-run [& args]
+(defmacro sh-run
   "Run as shell command. Prints output, returns stat"
+  [& args]
   (def fst (get args 0))
   (if (tuple? fst)
     ~(os-shell ,(s+ (map string fst) " "))
     ~(os-shell ,(s+ (map string args) " "))))
 
-(defmacro sh-run-do [& forms]
+(defmacro sh-run-do
   "Run multiple forms as shell commands"
+  [& forms]
   ~(do ,;(map sh-run forms)))
 
-(defmacro sh-run-cmd [& args]
+(defmacro sh-run-cmd
   "Execute program. Returns output string."
+  [& args]
   (let [fst (get args 0)
         cmd (if (tuple? fst)
               (map string fst)
@@ -3936,17 +3984,22 @@ line contains line as string."
              (:wait p)
              (:read (p :out) :all)))))
 
-(defmacro sh-run-cmd-do [& forms]
+(defmacro sh-run-cmd-do
   "Execute multiple programs"
+  [& forms]
   (def forms (map sh-run-cmd forms))
   ~(map eval ,forms))
 
-(defmacro $ [& args]
+(defmacro $
+  "Entry point to shell macro. Run as shell command if last arg is :"
+  [& args]
   (if (= (last args) :sh)
     ~(sh-run ,(head args))
     ~(sh-run-cmd ,args)))
 
-(defmacro $* [& forms]
+(defmacro $*
+  "Run many shell macros."
+  [& forms]
   (let [lastform (last forms)]
     (if (and
           (not (tuple? lastform))

@@ -3803,7 +3803,7 @@
 ###
 
 ## Other
-(defun is-len [coll len]
+(defun is-len? [coll len]
   (= (length coll) len))
 
 (defun head

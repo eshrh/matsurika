@@ -19,6 +19,7 @@
 + For either of the previous two commands, if the last arg is :sh,
   then eval by passing to the system shell. Prints output, returns nil.
 ** Predicates
++ is-len? :: checks if collection is length
 + hasone? :: coll has exactly one element
 ** File
 + file<- :: read full file and close
@@ -34,7 +35,6 @@
   reads it as a number, wds a list of words, wdsn a list of words as
   numbers, and finally line which is the line after trimming.
 ** Collections
-+ is-len :: checks if collection is length
 + head, tail functions
 + idx :: get with flipped arguments. supports negative indexing
 + fst :: first

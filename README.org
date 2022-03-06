@@ -1,4 +1,4 @@
-This is matsurika, a fork of the [[https://github.com/janet-lang/janet/][janet]] programming language. It is
+This is 茉莉花[matsurika], a fork of the [[https://github.com/janet-lang/janet/][janet]] programming language. It is
 extremely unstable, unreadable, prone to change, and should not be
 used for anything.
 
@@ -25,7 +25,8 @@ used by matsurika-mode.el to provide autocompletion via company and
 docs look-up of functions (C-c C-d). Matsurika-mode is derived from
 [[https://github.com/clojure-emacs/clojure-mode/][clojure-mode]] to do a lot of heavy lifting primarily with
 indentation. I have always clojure-mode on my emacs anyway, so I don't
-care about the dependency.
+care about the dependency. Most of the program is based on [[https://github.com/ALSchwalm/janet-mode][janet-mode]]
+by ALSchwalm (GPL).
 
 An extra program written in matsurika can be found in the tools
 directory which parses changes.org to apply all function renamings to

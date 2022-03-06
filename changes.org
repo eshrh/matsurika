@@ -6,8 +6,6 @@
 
 * Todos
 ** TODO better loop macro
-** TODO general flip function
-
 * Additions
 ** Math
 *** Bitwise operations
@@ -48,6 +46,9 @@
 ** PEG
 - peg>!* :: peg match all
 - extra default patterns :: (any) forms for S W A D H.
+** Misc
+- improved ->> :: Prefixing any threaded form with * flips the arg
+  order of the function.
 * Renaming
 ** Arrays
 - array/new :: arr-new

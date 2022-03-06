@@ -1210,7 +1210,7 @@
     (tup: parts 0))
   (reduce fop x forms))
 
-(defmacro ->>
+(defmacro thread-last
   `Threading macro. Inserts x as the last value in the first form
   in forms, and inserts the modified first form into the second form
   in the same manner, and so on. Useful for expressing pipelines of data.`
@@ -3142,9 +3142,9 @@
   (def bindings (filter fltr (all-bindings)))
   (def dynamics (map describe (filter fltr (all-dynamics))))
   (print)
-  (print (doc-format (string "Bindings:\n\n" (s+ bindings " "))))
+  (print (doc-format (string "Bindings:\n\n" (s-join bindings " "))))
   (print)
-  (print (doc-format (string "Dynamics:\n\n" (s+ dynamics " "))))
+  (print (doc-format (string "Dynamics:\n\n" (s-join dynamics " "))))
   (print "\n    Use (doc sym) for more information on a binding.\n"))
 
 (defun- print-module-entry
@@ -3306,7 +3306,7 @@
            :let [instr (bytecode i)]]
       (prin (if (= (tup-type instr) :brackets) "*" " "))
       (prin (if (= i pc) "> " "  "))
-      (prinf "%.20s" (string (s+ (map string instr) " ") padding))
+      (prinf "%.20s" (string (s-join (map string instr) " ") padding))
       (when sourcemap
         (let [[sl sc] (sourcemap i)
               loc [sl sc]]
@@ -3828,6 +3828,25 @@
   [ds]
   (get ds 1))
 
+(defun thread-flip [form]
+  ~((flip ,(fst form)) ,;(tail form)))
+
+(defmacro ->>
+  [x & forms]
+  (var formsmut @[])
+  (var i 0)
+  (while (< i (length forms))
+    (let [cur (get forms i)]
+      (if (= '* cur)
+        (do
+          (arr<- formsmut
+                 (thread-flip (get forms (inc i))))
+          (+= i 2))
+        (do
+          (arr<- formsmut cur)
+          (+= i 1)))))
+  ~(thread-last ,x ,;formsmut))
+
 ## File reading functions
 (defun file<-
   "Read all the data of a file, return a string"
@@ -3933,6 +3952,21 @@ _<number>: shorthand for (f <number>)"
   (filter |(not (empty? $))
           (map s// (s/ " " str))))
 
+(defmacro s+
+  "Concat strings with extra vars.
+Variables:
+qt - double quote
+sqt - single quote
+nl - newline
+tb - tab
+s - space"
+  [& strings]
+  ~(let [qt "\""
+         sqt "'"
+         nl "\n"
+         tb "\t"
+         s " "]
+     (string ,;strings)))
 
 ## PEG helper
 
@@ -3963,8 +3997,8 @@ _<number>: shorthand for (f <number>)"
   [& args]
   (def fst (get args 0))
   (if (tuple? fst)
-    ~(os-shell ,(s+ (map string fst) " "))
-    ~(os-shell ,(s+ (map string args) " "))))
+    ~(os-shell ,(s-join (map string fst) " "))
+    ~(os-shell ,(s-join (map string args) " "))))
 
 (defmacro sh-run-do
   "Run multiple forms as shell commands"

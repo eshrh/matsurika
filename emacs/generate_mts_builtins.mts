@@ -31,15 +31,13 @@
 
 (file->
  "docs.txt"
- (string "(setq mts-docs '("
-         (->> docs
-              (map (fn [item]
-                     (string
-                      "("
-                      qt (fst item) qt
-                      " . "
-                      qt (snd item) qt
-                      ")")))
-              ((flip s+) "\n")
-              )
-         "))"))
+ (s+
+  "(setq mts-docs '("
+  (->> (pairs root-env)
+       (map (fn [[name doc]]
+              (s+ "("
+                  qt (string name) qt
+                  " . "
+                  qt (doc-formatter doc) qt ")")))
+       *(s-join nl))
+  "))"))

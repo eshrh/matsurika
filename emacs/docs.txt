@@ -80,7 +80,7 @@ Defined in boot.janet -- 260 : 1")
 (file<- file-path)
 
 Read all the data of a file, return a string
-Defined in boot.janet -- 3832 : 1")
+Defined in boot.janet -- 3851 : 1")
 ("-=" . "MACRO
 (-= x n)
 
@@ -169,7 +169,7 @@ Defined in boot.janet -- 1291 : 1")
 (sh-run-do & forms)
 
 Run multiple forms as shell commands
-Defined in boot.janet -- 3969 : 1")
+Defined in boot.janet -- 4003 : 1")
 ("next-after" . "FUNCTION
 (math/next x y)
 
@@ -207,6 +207,11 @@ Defined in boot.janet -- 1478 : 1")
 
 Ensures that the memory backing the array is large enough for `capacity` items at the given rate of growth. Capacity and growth must be integers. If the backing capacity is already enough, then this function does nothing. Otherwise, the backing memory will be reallocated so that there is enough space.
 Defined in src/core/array.c -- 194 : 1")
+("thread-flip" . "FUNCTION
+(thread-flip form)
+
+
+Defined in boot.janet -- 3831 : 1")
 ("tab-getproto" . "FUNCTION
 (table/getproto tab)
 
@@ -419,11 +424,11 @@ Defined in boot.janet -- 1135 : 1")
 
 Returns a string that is n copies of bytes concatenated.
 Defined in src/core/string.c -- 201 : 1")
-("s+" . "FUNCTION
-(string/join parts &opt sep)
+("s+" . "MACRO
+(s+ & strings)
 
-Joins an array of strings into one string, optionally separated by a separator string sep.
-Defined in src/core/string.c -- 488 : 1")
+Concat strings with extra vars.Variables:qt - double quotesqt - single quotenl - newlinetb - tabs - space
+Defined in boot.janet -- 3955 : 1")
 ("mod" . "FUNCTION
 (mod dividend divisor)
 
@@ -724,6 +729,11 @@ Defined in src/core/math.c -- 270 : 1")
 
 Trim trailing whitespace from a byte sequence. If the argument set is provided, consider only characters in set to be whitespace.
 Defined in src/core/string.c -- 597 : 1")
+("s-join" . "FUNCTION
+(string/join parts &opt sep)
+
+Joins an array of strings into one string, optionally separated by a separator string sep.
+Defined in src/core/string.c -- 488 : 1")
 ("deep-not=" . "FUNCTION
 (deep-not= x y)
 
@@ -894,12 +904,12 @@ Check if xs is in non-ascending order. Returns a boolean.")
 (sh-run-cmd-do & forms)
 
 Execute multiple programs
-Defined in boot.janet -- 3987 : 1")
+Defined in boot.janet -- 4021 : 1")
 ("doc*" . "FUNCTION
 (doc* &opt sym)
 
-Get the documentation for a symbol in a given environment. Function form of doc.
-Defined in boot.janet -- 3178 : 1")
+Return docstring for symbol
+Defined in boot.janet -- 4045 : 1")
 ("bor" . "FUNCTION
 (bor & xs)
 
@@ -928,10 +938,8 @@ Defined in boot.janet -- 94 : 1")
 ("->>" . "MACRO
 (->> x & forms)
 
-Threading macro. Inserts x as the last value in the first form
-in forms, and inserts the modified first form into the second form
-in the same manner, and so on. Useful for expressing pipelines of data.
-Defined in boot.janet -- 1213 : 1")
+
+Defined in boot.janet -- 3834 : 1")
 ("parser/clone" . "FUNCTION
 (parser/clone p)
 
@@ -1124,7 +1132,7 @@ Defined in boot.janet -- 2290 : 1")
 (sh-run & args)
 
 Run as shell command. Prints output, returns stat
-Defined in boot.janet -- 3961 : 1")
+Defined in boot.janet -- 3995 : 1")
 ("struct/proto-flatten" . "FUNCTION
 (struct/proto-flatten st)
 
@@ -1309,7 +1317,7 @@ Defined in src/core/math.c -- 342 : 1")
 (list-replace pred to-func form)
 
 Replace all elements of a tuple. PRED is a predicate that if tdecides to replace the element. TO-FUNC is a function that returns what to replacethe element with. Both functions take a single argument, the element.
-Defined in boot.janet -- 3864 : 1")
+Defined in boot.janet -- 3883 : 1")
 ("fiber?" . "FUNCTION
 (fiber? x)
 
@@ -1405,7 +1413,7 @@ Defined in src/core/io.c -- 641 : 1")
 (file-each-line file & forms)
 
 Execute forms on each line of file. variableline contains line as string.
-Defined in boot.janet -- 3854 : 1")
+Defined in boot.janet -- 3873 : 1")
 ("buf:" . "FUNCTION
 (buffer/slice bytes &opt start end)
 
@@ -1421,7 +1429,7 @@ Defined in boot.janet -- 127 : 1")
 
 Split string by 
 
-Defined in boot.janet -- 3925 : 1")
+Defined in boot.janet -- 3944 : 1")
 ("nan" . "FUNCTION
 Not a number (IEEE-754 NaN)
 Defined in src/core/math.c -- 450 : 1")
@@ -1455,7 +1463,7 @@ Defined in boot.janet -- 106 : 1")
 (s:> str find)
 
 Slice STR from beginning until FIND
-Defined in boot.janet -- 3910 : 1")
+Defined in boot.janet -- 3929 : 1")
 ("even?" . "FUNCTION
 (even? x)
 
@@ -1683,7 +1691,7 @@ Defined in src/core/marsh.c -- 1496 : 1")
 (s>: str find)
 
 Slice STR from FIND until end
-Defined in boot.janet -- 3915 : 1")
+Defined in boot.janet -- 3934 : 1")
 ("sinh" . "FUNCTION
 (math/sinh x)
 
@@ -1748,7 +1756,7 @@ Defined in src/core/io.c -- 283 : 1")
 (words str)
 
 Split string by any amount of spaces
-Defined in boot.janet -- 3930 : 1")
+Defined in boot.janet -- 3949 : 1")
 ("debug/arg-stack" . "FUNCTION
 (debug/arg-stack fiber)
 
@@ -1807,12 +1815,12 @@ Defined in src/core/math.c -- 284 : 1")
 (sh-run-cmd & args)
 
 Execute program. Returns output string.
-Defined in boot.janet -- 3974 : 1")
+Defined in boot.janet -- 4008 : 1")
 ("awk-dispatch" . "MACRO
 (awk-dispatch code rawline)
 
 
-Defined in boot.janet -- 3875 : 1")
+Defined in boot.janet -- 3894 : 1")
 ("os-execute" . "FUNCTION
 (os/execute args &opt flags env)
 
@@ -2055,7 +2063,7 @@ Defined in src/core/math.c -- 273 : 1")
 (peg>!* patt text)
 
 Get all matching peg text matching PATT in TEXT
-Defined in boot.janet -- 3939 : 1")
+Defined in boot.janet -- 3973 : 1")
 ("brushift" . "FUNCTION
 (brushift x & shifts)
 
@@ -2106,6 +2114,13 @@ from searching that path template if the filter doesn't match the input
 path. The filter can be a string or a predicate function, and
 is often a file extension, including the period.
 Defined in boot.janet -- 2589 : 1")
+("thread-last" . "MACRO
+(thread-last x & forms)
+
+Threading macro. Inserts x as the last value in the first form
+in forms, and inserts the modified first form into the second form
+in the same manner, and so on. Useful for expressing pipelines of data.
+Defined in boot.janet -- 1213 : 1")
 ("parse" . "FUNCTION
 (parse str)
 
@@ -2206,7 +2221,7 @@ Defined in src/core/os.c -- 119 : 1")
 ($ & args)
 
 Entry point to shell macro. Run as shell command if last arg is :
-Defined in boot.janet -- 3993 : 1")
+Defined in boot.janet -- 4027 : 1")
 ("%" . "FUNCTION
 (% dividend divisor)
 
@@ -2540,7 +2555,7 @@ Defined in src/core/corelib.c -- 636 : 1")
 (file-> file-path content)
 
 Dump to file-path a string content
-Defined in boot.janet -- 3840 : 1")
+Defined in boot.janet -- 3859 : 1")
 ("os-cwd" . "FUNCTION
 (os/cwd)
 
@@ -2571,7 +2586,7 @@ Defined in boot.janet -- 2585 : 1")
 (s>:> str fbeg fend)
 
 Slice STR from FBEG until FEND
-Defined in boot.janet -- 3920 : 1")
+Defined in boot.janet -- 3939 : 1")
 ("symbol?" . "FUNCTION
 (symbol? x)
 
@@ -2743,7 +2758,7 @@ Defined in src/core/corelib.c -- 374 : 1")
 (idx k ds)
 
 Index k'th item of ds
-Defined in boot.janet -- 3952 : 1")
+Defined in boot.janet -- 3986 : 1")
 ("compare" . "FUNCTION
 (compare x y)
 
@@ -2829,7 +2844,7 @@ Defined in boot.janet -- 3635 : 1")
 ($* & forms)
 
 Run many shell macros.
-Defined in boot.janet -- 4000 : 1")
+Defined in boot.janet -- 4034 : 1")
 ("resume" . "FUNCTION
 (resume fiber &opt x)
 
@@ -2934,7 +2949,7 @@ Defined in boot.janet -- 151 : 1")
 (awk data file)
 
 Execute actions on every line of a file (object).First arg is a table, key is a peg and value is a single form to be run on everyline that the peg matches. Forms have access to several variables:line: trimmed linewds: line split by whitespacewdsn: words of the line, all converted to numbersf: a function to get the nth field of the linen: a function to get the nth field of the line, as a numberNF: number of fields_<number>: shorthand for (f <number>)
-Defined in boot.janet -- 3887 : 1")
+Defined in boot.janet -- 3906 : 1")
 ("s-from-bytes" . "FUNCTION
 (string/from-bytes & byte-vals)
 
@@ -3100,7 +3115,7 @@ Defined in boot.janet -- 609 : 1")
 (flip f)
 
 Return a new function with the args flipped
-Defined in boot.janet -- 3946 : 1")
+Defined in boot.janet -- 3980 : 1")
 ("trace" . "FUNCTION
 (trace func)
 
@@ -3202,7 +3217,7 @@ Defined in src/core/math.c -- 288 : 1")
 (file+ file-path content)
 
 Append to file-path a string content
-Defined in boot.janet -- 3847 : 1")
+Defined in boot.janet -- 3866 : 1")
 ("generate" . "MACRO
 (generate head & body)
 

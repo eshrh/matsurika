@@ -33,6 +33,9 @@ a file. This is probably enough to get any standard janet program to
 run in matsurika. I have no interest in build systems or executable
 packaging, so the fact that jpm doesn't work is a nonissue for me.
 
+Any new code I've written should be considered as licensed under the
+GNU GPLv3 or later, you can find the license in the file GPL.
+
 * License from upstream janet:
 
 Copyright (c) 2021 Calvin Rose and contributors

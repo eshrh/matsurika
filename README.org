@@ -1,0 +1,56 @@
+This is matsurika, a fork of the [[https://github.com/janet-lang/janet/][janet]] programming language. It is
+extremely unstable, unreadable, prone to change, and should not be
+used for anything.
+
+You can find the full list of changes made in [[ch][./changes.org]], which may
+fall out of date in time. Don't expect any super great documentation
+either. Many common functions and macros are renamed for concision --
+I like janet but i'm not too fond of the module/function naming
+style. Many functions and macros are included in the interpreter to
+make things I need to do shorter, and some objects have significantly
+modified behavior. Most added functions can be found towards the end
+of boot.janet
+
+The goal of this fork is to essentially become my personal scripting
+language, which is molded to match my tastes exactly. Much of this
+could have been implemented as a kind of standard library on top of
+janet, but forking the project allows for more freedom and the
+advantage of having a single binary for portability; at the
+disadvantage that I need to manually pull in important changes from
+upstream once in a while.
+
+The emacs directory contains some extra tooling. It includes a
+matsurika program to generate elisp readable docs which can then be
+used by matsurika-mode.el to provide autocompletion via company and
+docs look-up of functions (C-c C-d). Matsurika-mode is derived from
+[[https://github.com/clojure-emacs/clojure-mode/][clojure-mode]] to do a lot of heavy lifting primarily with
+indentation. I have always clojure-mode on my emacs anyway, so I don't
+care about the dependency.
+
+An extra program written in matsurika can be found in the tools
+directory which parses changes.org to apply all function renamings to
+a file. This is probably enough to get any standard janet program to
+run in matsurika. I have no interest in build systems or executable
+packaging, so the fact that jpm doesn't work is a nonissue for me.
+
+* License from upstream janet:
+
+Copyright (c) 2021 Calvin Rose and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

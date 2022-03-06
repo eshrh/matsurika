@@ -181,6 +181,7 @@ the syntax table, so `forward-word' works as expected.")
     (,matsurika-shorthand-pattern . (1 font-lock-keyword-face))))
 
 (defun matsurika--generate-builtin-ht ()
+  (interactive)
   (load-file "./docs.txt")
   (setq mts-ht (make-hash-table :test #'equal))
   (cl-loop for doc in mts-docs
@@ -222,7 +223,9 @@ the syntax table, so `forward-word' works as expected.")
   (setq-local imenu-generic-expression matsurika-imenu-generic-expression)
   (matsurika--set-indent)
   (add-to-list 'company-backends #'company-matsurika-builtins)
-  (use-local-map matsurika-mode-map))
+  (use-local-map matsurika-mode-map)
+  (unless (boundp 'mts-ht)
+    (matsurika--generate-builtin-ht)))
 
 
 ;;;###autoload

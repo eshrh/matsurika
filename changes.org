@@ -43,6 +43,7 @@
 + s>:> :: slice from second arg to third arg in first arg
 + lines :: split by \n
 + words :: split by whitespace
++ s+ :: concat strings with extra shorthand variables
 ** PEG
 - peg>!* :: peg match all
 - extra default patterns :: (any) forms for S W A D H.
@@ -118,7 +119,7 @@
 - string/replace-all :: s/>*
 - string/split :: s/
 - string/check-set :: s-check-set
-- string/join :: s+
+- string/join :: s-join
 - string/format :: s-fmt
 - string/trim :: s//
 - string/triml :: s/-

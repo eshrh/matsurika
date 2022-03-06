@@ -624,7 +624,7 @@ void janet_lib_string(JanetTable *env) {
         JANET_CORE_REG("s/>*", cfun_string_replaceall),
         JANET_CORE_REG("s/", cfun_string_split),
         JANET_CORE_REG("s-check-set", cfun_string_checkset),
-        JANET_CORE_REG("s+", cfun_string_join),
+        JANET_CORE_REG("s-join", cfun_string_join),
         JANET_CORE_REG("s-fmt", cfun_string_format),
         JANET_CORE_REG("s//", cfun_string_trim),
         JANET_CORE_REG("s/-", cfun_string_triml),

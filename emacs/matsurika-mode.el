@@ -21,13 +21,14 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'clojure-mode)
 
 (defgroup matsurika nil
   "A mode for matsurika"
   :group 'languages)
 
 (defvar matsurika-mode-syntax-table
-  (let ((table (make-syntax-table lisp-data-mode-syntax-table)))
+  (let ((table (make-syntax-table clojure-mode-syntax-table)))
     (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?\n ">" table)
     

@@ -84,8 +84,11 @@ int main(int argc, const char **argv) {
     }
 
     FILE *boot_file = fopen("src/boot/boot.janet", "rb");
-    if (NULL == boot_file) {
-        fprintf(stderr, "Could not open src/boot/boot.janet\n");
+    FILE *mts_file = fopen("src/boot/matsurika.mts", "rb");
+    FILE *bs_file = fopen("src/boot/bootstrap.mts", "rb");
+    
+    if (NULL == boot_file || NULL == mts_file || NULL == bs_file) {
+        fprintf(stderr, "Could not open a boot object\n");
         exit(1);
     }
 
@@ -93,7 +96,19 @@ int main(int argc, const char **argv) {
     fseek(boot_file, 0, SEEK_END);
     size_t boot_size = ftell(boot_file);
     fseek(boot_file, 0, SEEK_SET);
-    unsigned char *boot_buffer = janet_malloc(boot_size);
+    
+    fseek(mts_file, 0, SEEK_END);
+    size_t mts_size = ftell(mts_file);
+    fseek(mts_file, 0, SEEK_SET);
+
+    fseek(bs_file, 0, SEEK_END);
+    size_t bs_size = ftell(bs_file);
+    fseek(bs_file, 0, SEEK_SET);
+
+    size_t total_size = boot_size + mts_size + bs_size;
+
+    unsigned char *boot_buffer = janet_malloc(total_size);
+    
     if (NULL == boot_buffer) {
         fprintf(stderr, "Failed to allocate boot buffer\n");
         exit(1);
@@ -102,9 +117,20 @@ int main(int argc, const char **argv) {
         fprintf(stderr, "Failed to read into boot buffer\n");
         exit(1);
     }
+    if (!fread(boot_buffer + boot_size, 1, mts_size, mts_file)) {
+        fprintf(stderr, "Failed to read into boot buffer from mts \n");
+        exit(1);
+    }
+    if (!fread(boot_buffer + boot_size + mts_size, 1, bs_size, bs_file)) {
+        fprintf(stderr, "Failed to read into boot buffer from bootstrap \n");
+        exit(1);
+    }
+    
     fclose(boot_file);
+    fclose(mts_file);
+    fclose(bs_file);
 
-    status = janet_dobytes(env, boot_buffer, (int32_t) boot_size, boot_filename, NULL);
+    status = janet_dobytes(env, boot_buffer, (int32_t) total_size, boot_filename, NULL);
     janet_free(boot_buffer);
 
     /* Deinitialize vm */

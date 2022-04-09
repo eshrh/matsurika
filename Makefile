@@ -158,7 +158,7 @@ build/janet_boot: $(JANET_BOOT_OBJECTS)
 	$(CC) $(BOOT_CFLAGS) -o $@ $(JANET_BOOT_OBJECTS) $(CLIBS)
 
 # Now the reason we bootstrap in the first place
-build/c/janet.c: build/janet_boot src/boot/boot.janet
+build/c/janet.c: build/janet_boot src/boot/boot.janet src/boot/matsurika.mts src/boot/bootstrap.mts
 	build/janet_boot . JANET_PATH '$(JANET_PATH)' > $@
 	cksum $@
 

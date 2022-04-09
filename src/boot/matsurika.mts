@@ -6,6 +6,8 @@
 ###
 
 ## Other
+(defun id (x) x)
+
 (defun is-len?
   "Checks if COLL is LEN"
   [coll len]
@@ -194,14 +196,18 @@ s - space"
     (get ds (+ (length ds) k))))
 
 ## Shell commands
+(defun- sh--get-cmd [fst args]
+  (map id (list-replace (fn [el] (s-prefix? "$" el))
+                        (fn [el] (string (eval (symbol (s: el 1)))))
+                        (if (tuple? fst)
+                          (map string fst)
+                          (map string args)))))
 
 (defmacro sh-run
   "Run as shell command. Prints output, returns stat"
   [& args]
   (def fst (get args 0))
-  (if (tuple? fst)
-    ~(os-shell ,(s-join (map string fst) " "))
-    ~(os-shell ,(s-join (map string args) " "))))
+  ~(os-shell ,(s-join (sh--get-cmd fst args) " ")))
 
 (defmacro sh-run-do
   "Run multiple forms as shell commands"
@@ -212,9 +218,7 @@ s - space"
   "Execute program. Returns output string."
   [& args]
   (let [fst (get args 0)
-        cmd (if (tuple? fst)
-              (map string fst)
-              (map string args))]
+        cmd (sh--get-cmd fst args)]
     ~(lines (do
              (def p
                   (os-spawn ,cmd :p {:in :pipe :out :pipe}))

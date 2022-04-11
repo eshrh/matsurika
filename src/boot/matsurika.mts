@@ -1,9 +1,52 @@
-        
+
 ###
 ###
 ### MATSURIKA
 ###
 ###
+
+## String ops
+(defmacro s:>
+  "Slice STR from beginning until FIND"
+  [str find]
+  ~(s: ,str 0 (s> ,find ,str)))
+
+(defmacro s>:
+  "Slice STR from FIND until end"
+  [str find]
+  ~(s: ,str (s> ,find ,str)))
+
+(defmacro s>:>
+  "Slice STR from FBEG until FEND"
+  [str fbeg fend]
+  ~(s: ,str (s> ,fend ,str) (s> ,fend ,str)))
+
+(defmacro lines
+  "Split string by \n"
+  [str]
+  ~(s/ "\n" ,str))
+
+(defun words
+  "Split string by any amount of spaces"
+  [str]
+  (filter |(not (empty? $))
+          (map s// (s/ " " str))))
+
+(defmacro s+
+  "Concat strings with extra vars.
+Variables:
+qt - double quote
+sqt - single quote
+nl - newline
+tb - tab
+s - space"
+  [& strings]
+  ~(let [qt "\""
+         sqt "'"
+         nl "\n"
+         tb "\t"
+         s " "]
+     (string ,;strings)))
 
 ## Other
 (defun id (x) x)
@@ -53,6 +96,7 @@
   ~(thread-last ,x ,;formsmut))
 
 ## File reading functions
+
 (defun file<-
   "Read all the data of a file, return a string"
   [file-path]
@@ -99,7 +143,8 @@ the element with. Both functions take a single argument, the element."
 (defmacro awk-dispatch [code rawline]
   (def code (list-replace (fn [el] (s-prefix? "_" (string el)))
                           (fn [el] (tuple 'f (s->n (tail (string el)))))
-                          code))
+                          (if (tuple? code)
+                            code ~(id ,code))))
   ~(let [line (s// ,rawline)
          wds (words line)
          wdsn (map s->n wds)
@@ -108,7 +153,16 @@ the element with. Both functions take a single argument, the element."
          NF (length wds)]
      ,code))
 
-(defun awk
+(defun awk-str [data str]
+  (var res @[])
+  (each line (lines str)
+        (each action (pairs data)
+              (let [[patt code] action]
+                (if (peg>! patt line)
+                  (arr<- res (eval ~(awk-dispatch ,code ,line)))))))
+  res)
+
+(defun awk-file
   "Execute actions on every line of a file (object).
 First arg is a table, key is a peg and value is a single form to be run on every
 line that the peg matches. Forms have access to several variables:
@@ -121,7 +175,7 @@ NF: number of fields
 _<number>: shorthand for (f <number>)"
   [data file]
   (var res @[])
-  (def f (file-open file))
+  (def f (if (string? file) (file-open file) file))
   (file-each-line
    f
    (each action (pairs data)
@@ -130,48 +184,8 @@ _<number>: shorthand for (f <number>)"
              (arr<- res (eval ~(awk-dispatch ,code ,line)))))))
   res)
 
-## String ops
-(defmacro s:>
-  "Slice STR from beginning until FIND"
-  [str find]
-  ~(s: ,str 0 (s> ,find ,str)))
-
-(defmacro s>:
-  "Slice STR from FIND until end"
-  [str find]
-  ~(s: ,str (s> ,find ,str)))
-
-(defmacro s>:>
-  "Slice STR from FBEG until FEND"
-  [str fbeg fend]
-  ~(s: ,str (s> ,fend ,str) (s> ,fend ,str)))
-
-(defmacro lines
-  "Split string by \n"
-  [str]
-  ~(s/ "\n" ,str))
-
-(defun words
-  "Split string by any amount of spaces"
-  [str]
-  (filter |(not (empty? $))
-          (map s// (s/ " " str))))
-
-(defmacro s+
-  "Concat strings with extra vars.
-Variables:
-qt - double quote
-sqt - single quote
-nl - newline
-tb - tab
-s - space"
-  [& strings]
-  ~(let [qt "\""
-         sqt "'"
-         nl "\n"
-         tb "\t"
-         s " "]
-     (string ,;strings)))
+(defmacro awk [data]
+  ~(pp (awk-file ',data stdin)))
 
 ## PEG helper
 
@@ -198,7 +212,7 @@ s - space"
 ## Shell commands
 (defun- sh--get-cmd [fst args]
   (map id (list-replace (fn [el] (s-prefix? "$" el))
-                        (fn [el] (string (eval (symbol (s: el 1)))))
+                        (fn [el] (->> (s: el 1) (symbol) (eval) (string)))
                         (if (tuple? fst)
                           (map string fst)
                           (map string args)))))
@@ -248,3 +262,9 @@ s - space"
       ~(sh-run-do ,;(head forms))
       ~(sh-run-cmd-do ,;forms))))
 
+## cli stuff
+
+(defmacro cli
+  [& forms]
+  ~(defun main [& args]
+     ,;forms))

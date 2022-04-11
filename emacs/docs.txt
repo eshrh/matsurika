@@ -17,7 +17,7 @@ Defined in boot.janet -- 153 : 1")
 (symbol/slice bytes &opt start end)
 
 Same a string/slice, but returns a symbol.
-Defined in src/core/string.c -- 185 : 1")
+Defined in src/core/string.c -- 187 : 1")
 ("inc" . "FUNCTION
 (inc x)
 
@@ -55,6 +55,11 @@ Defined in src/core/compile.c -- 999 : 1")
 
 Returns the hyperbolic arctangent of x.
 Defined in src/core/math.c -- 275 : 1")
+("id" . "FUNCTION
+(id x)
+
+
+Defined in boot.janet -- 3836 : 1")
 ("errorf" . "FUNCTION
 (errorf fmt & args)
 
@@ -80,7 +85,7 @@ Defined in boot.janet -- 260 : 1")
 (file<- file-path)
 
 Read all the data of a file, return a string
-Defined in boot.janet -- 3851 : 1")
+Defined in boot.janet -- 3883 : 1")
 ("-=" . "MACRO
 (-= x n)
 
@@ -131,7 +136,7 @@ Defined in boot.janet -- 3625 : 1")
 (os/rename oldname newname)
 
 Rename a file on disk to a new path. Returns nil.
-Defined in src/core/os.c -- 1930 : 1")
+Defined in src/core/os.c -- 1920 : 1")
 ("count" . "FUNCTION
 (count pred ind)
 
@@ -169,7 +174,7 @@ Defined in boot.janet -- 1291 : 1")
 (sh-run-do & forms)
 
 Run multiple forms as shell commands
-Defined in boot.janet -- 4003 : 1")
+Defined in boot.janet -- 4039 : 1")
 ("next-after" . "FUNCTION
 (math/next x y)
 
@@ -211,7 +216,7 @@ Defined in src/core/array.c -- 194 : 1")
 (thread-flip form)
 
 
-Defined in boot.janet -- 3831 : 1")
+Defined in boot.janet -- 3863 : 1")
 ("tab-getproto" . "FUNCTION
 (table/getproto tab)
 
@@ -269,7 +274,7 @@ Defined in src/core/marsh.c -- 1473 : 1")
 (os/dir dir &opt array)
 
 Iterate over files and subdirectories in a directory. Returns an array of paths parts, with only the file name or directory name and no prefix.
-Defined in src/core/os.c -- 1892 : 1")
+Defined in src/core/os.c -- 1882 : 1")
 ("drop-until" . "FUNCTION
 (drop-until pred ind)
 
@@ -423,12 +428,12 @@ Defined in boot.janet -- 1135 : 1")
 (string/repeat bytes n)
 
 Returns a string that is n copies of bytes concatenated.
-Defined in src/core/string.c -- 201 : 1")
+Defined in src/core/string.c -- 203 : 1")
 ("s+" . "MACRO
 (s+ & strings)
 
 Concat strings with extra vars.Variables:qt - double quotesqt - single quotenl - newlinetb - tabs - space
-Defined in boot.janet -- 3955 : 1")
+Defined in boot.janet -- 3987 : 1")
 ("mod" . "FUNCTION
 (mod dividend divisor)
 
@@ -437,7 +442,7 @@ Returns the modulo of dividend / divisor.")
 (string/split delim str &opt start limit)
 
 Splits a string str with delimiter delim and returns an array of substrings. The substrings will not contain the delimiter delim. If delim is not found, the returned array will have one element. Will start searching for delim at the index start (if provided), and return up to a maximum of limit results (if provided).
-Defined in src/core/string.c -- 434 : 1")
+Defined in src/core/string.c -- 436 : 1")
 ("log10" . "FUNCTION
 (math/log10 x)
 
@@ -461,12 +466,12 @@ Defined in boot.janet -- 1151 : 1")
 (string/slice bytes &opt start end)
 
 Returns a substring from a byte sequence. The substring is from index start inclusive to index end exclusive. All indexing is from 0. 'start' and 'end' can also be negative to indicate indexing from the end of the string. Note that index -1 is synonymous with index (length bytes) to allow a full negative slice range. 
-Defined in src/core/string.c -- 173 : 1")
+Defined in src/core/string.c -- 175 : 1")
 ("s>" . "FUNCTION
 (string/find patt str &opt start-index)
 
 Searches for the first instance of pattern patt in string str. Returns the index of the first character in patt if found, otherwise returns nil.
-Defined in src/core/string.c -- 309 : 1")
+Defined in src/core/string.c -- 311 : 1")
 ("arr><" . "FUNCTION
 (array/trim arr)
 
@@ -486,7 +491,7 @@ Defined in src/core/io.c -- 330 : 1")
 (os/mkdir path)
 
 Create a new directory. The path will be relative to the current directory if relative, otherwise it will be an absolute path. Returns true if the directory was created, false if the directory already exists, and errors otherwise.
-Defined in src/core/os.c -- 1487 : 1")
+Defined in src/core/os.c -- 1477 : 1")
 ("rng-buffer" . "FUNCTION
 (math/rng-buffer rng n &opt buf)
 
@@ -496,17 +501,17 @@ Defined in src/core/math.c -- 183 : 1")
 (string/ascii-upper str)
 
 Returns a new string where all bytes are replaced with the uppercase version of themselves in ASCII. Does only a very simple case check, meaning no unicode support.
-Defined in src/core/string.c -- 264 : 1")
+Defined in src/core/string.c -- 266 : 1")
 ("s_" . "FUNCTION
 (string/ascii-lower str)
 
 Returns a new string where all bytes are replaced with the lowercase version of themselves in ASCII. Does only a very simple case check, meaning no unicode support.
-Defined in src/core/string.c -- 245 : 1")
+Defined in src/core/string.c -- 247 : 1")
 ("head" . "FUNCTION
 (head xs)
 
 Gets all but the last element of XS
-Defined in boot.janet -- 3811 : 1")
+Defined in boot.janet -- 3843 : 1")
 ("parser/has-more" . "FUNCTION
 (parser/has-more parser)
 
@@ -543,7 +548,7 @@ Defined in src/core/math.c -- 291 : 1")
 (keyword/slice bytes &opt start end)
 
 Same a string/slice, but returns a keyword.
-Defined in src/core/string.c -- 193 : 1")
+Defined in src/core/string.c -- 195 : 1")
 ("eflush" . "FUNCTION
 (eflush)
 
@@ -569,7 +574,7 @@ Defined in src/core/math.c -- 305 : 1")
 (os/perm-int bytes)
 
 Parse a 9 character permission string and return an integer that can be used by chmod.
-Defined in src/core/os.c -- 1974 : 1")
+Defined in src/core/os.c -- 1964 : 1")
 ("parser/status" . "FUNCTION
 (parser/status parser)
 
@@ -728,12 +733,12 @@ Defined in src/core/math.c -- 270 : 1")
 (string/trimr str &opt set)
 
 Trim trailing whitespace from a byte sequence. If the argument set is provided, consider only characters in set to be whitespace.
-Defined in src/core/string.c -- 597 : 1")
+Defined in src/core/string.c -- 599 : 1")
 ("s-join" . "FUNCTION
 (string/join parts &opt sep)
 
 Joins an array of strings into one string, optionally separated by a separator string sep.
-Defined in src/core/string.c -- 488 : 1")
+Defined in src/core/string.c -- 490 : 1")
 ("deep-not=" . "FUNCTION
 (deep-not= x y)
 
@@ -771,7 +776,7 @@ Check if xs is in non-descending order. Returns a boolean.")
 (os/link oldpath newpath &opt symlink)
 
 Create a link at newpath that points to oldpath and returns nil. Iff symlink is truthy, creates a symlink. Iff symlink is falsey or not provided, creates a hard link. Does not work on Windows.
-Defined in src/core/os.c -- 1446 : 1")
+Defined in src/core/os.c -- 1436 : 1")
 ("module/loaders" . "FUNCTION
 A table of loading method names to loading functions.
 This table lets require and import load many different kinds
@@ -808,12 +813,12 @@ Defined in boot.janet -- 2325 : 1")
 (string/triml str &opt set)
 
 Trim leading whitespace from a byte sequence. If the argument set is provided, consider only characters in set to be whitespace.
-Defined in src/core/string.c -- 587 : 1")
+Defined in src/core/string.c -- 589 : 1")
 ("s//" . "FUNCTION
 (string/trim str &opt set)
 
 Trim leading and trailing whitespace from a byte sequence. If the argument set is provided, consider only characters in set to be whitespace.
-Defined in src/core/string.c -- 574 : 1")
+Defined in src/core/string.c -- 576 : 1")
 ("foldl" . "FUNCTION
 (foldl f ind)
 
@@ -831,7 +836,7 @@ The flag set of config options from janetconf.h which is used to check if native
 (string/replace patt subst str)
 
 Replace the first occurrence of patt with subst in the string str. Will return the new string if patt is found, otherwise returns str.
-Defined in src/core/string.c -- 387 : 1")
+Defined in src/core/string.c -- 389 : 1")
 ("debug/fbreak" . "FUNCTION
 (debug/fbreak fun &opt pc)
 
@@ -904,12 +909,12 @@ Check if xs is in non-ascending order. Returns a boolean.")
 (sh-run-cmd-do & forms)
 
 Execute multiple programs
-Defined in boot.janet -- 4021 : 1")
+Defined in boot.janet -- 4055 : 1")
 ("doc*" . "FUNCTION
 (doc* &opt sym)
 
 Return docstring for symbol
-Defined in boot.janet -- 4045 : 1")
+Defined in boot.janet -- 3801 : 1")
 ("bor" . "FUNCTION
 (bor & xs)
 
@@ -924,7 +929,7 @@ Defined in boot.janet -- 1184 : 1")
 (string/bytes str)
 
 Returns a tuple of integers that are the byte values of the string.
-Defined in src/core/string.c -- 219 : 1")
+Defined in src/core/string.c -- 221 : 1")
 ("table" . "FUNCTION
 (table & kvs)
 
@@ -939,12 +944,17 @@ Defined in boot.janet -- 94 : 1")
 (->> x & forms)
 
 
-Defined in boot.janet -- 3834 : 1")
+Defined in boot.janet -- 3866 : 1")
 ("parser/clone" . "FUNCTION
 (parser/clone p)
 
 Creates a deep clone of a parser that is identical to the input parser. This cloned parser can be used to continue parsing from a good checkpoint if parsing later fails. Returns a new parser.
 Defined in src/core/parse.c -- 1250 : 1")
+("json-encode" . "FUNCTION
+(string/trim str &opt set)
+
+Trim leading and trailing whitespace from a byte sequence. If the argument set is provided, consider only characters in set to be whitespace.
+Defined in src/core/string.c -- 1165 : 1")
 ("index-of" . "FUNCTION
 (index-of x ind &opt dflt)
 
@@ -979,7 +989,7 @@ Defined in src/core/math.c -- 266 : 1")
 (snd ds)
 
 Gets the second element of DS
-Defined in boot.janet -- 3826 : 1")
+Defined in boot.janet -- 3858 : 1")
 ("-?>" . "MACRO
 (-?> x & forms)
 
@@ -993,7 +1003,7 @@ Defined in boot.janet -- 1226 : 1")
 (os/umask mask)
 
 Set a new umask, returns the old umask.
-Defined in src/core/os.c -- 1878 : 1")
+Defined in src/core/os.c -- 1868 : 1")
 ("module/loading" . "FUNCTION
 Table mapping currently loading modules to true. Used to prevent
 circular dependencies.
@@ -1038,7 +1048,7 @@ Defined in src/core/parse.c -- 1020 : 1")
 (os/exit &opt x)
 
 Exit from janet with an exit code equal to x. If x is not an integer, the exit with status equal the hash of x.
-Defined in src/core/os.c -- 196 : 1")
+Defined in src/core/os.c -- 186 : 1")
 ("debug/step" . "FUNCTION
 (debug/step fiber &opt x)
 
@@ -1132,7 +1142,7 @@ Defined in boot.janet -- 2290 : 1")
 (sh-run & args)
 
 Run as shell command. Prints output, returns stat
-Defined in boot.janet -- 3995 : 1")
+Defined in boot.janet -- 4033 : 1")
 ("struct/proto-flatten" . "FUNCTION
 (struct/proto-flatten st)
 
@@ -1223,7 +1233,7 @@ Defined in boot.janet -- 85 : 1")
 (os/proc-kill proc &opt wait)
 
 Kill a subprocess by sending SIGKILL to it on posix systems, or by closing the process handle on windows. If wait is truthy, will wait for the process to finish and returns the exit code. Otherwise, returns proc.
-Defined in src/core/os.c -- 560 : 1")
+Defined in src/core/os.c -- 550 : 1")
 ("*err*" . "FUNCTION
 Where error printing prints output to.
 Defined in boot.janet -- 1176 : 1")
@@ -1269,7 +1279,7 @@ Defined in boot.janet -- 1029 : 1")
 (os/perm-string int)
 
 Convert a Unix octal permission value from a permission integer as returned by os/stat to a human readable string, that follows the formatting of unix tools like ls. Returns the string as a 9 character string of r, w, x and - characters. Does not include the file/directory/symlink character as rendered by `ls`.
-Defined in src/core/os.c -- 1964 : 1")
+Defined in src/core/os.c -- 1954 : 1")
 ("module/add-paths" . "FUNCTION
 (module/add-paths ext loader)
 
@@ -1317,7 +1327,7 @@ Defined in src/core/math.c -- 342 : 1")
 (list-replace pred to-func form)
 
 Replace all elements of a tuple. PRED is a predicate that if tdecides to replace the element. TO-FUNC is a function that returns what to replacethe element with. Both functions take a single argument, the element.
-Defined in boot.janet -- 3883 : 1")
+Defined in boot.janet -- 3915 : 1")
 ("fiber?" . "FUNCTION
 (fiber? x)
 
@@ -1413,7 +1423,7 @@ Defined in src/core/io.c -- 641 : 1")
 (file-each-line file & forms)
 
 Execute forms on each line of file. variableline contains line as string.
-Defined in boot.janet -- 3873 : 1")
+Defined in boot.janet -- 3905 : 1")
 ("buf:" . "FUNCTION
 (buffer/slice bytes &opt start end)
 
@@ -1429,7 +1439,7 @@ Defined in boot.janet -- 127 : 1")
 
 Split string by 
 
-Defined in boot.janet -- 3944 : 1")
+Defined in boot.janet -- 3976 : 1")
 ("nan" . "FUNCTION
 Not a number (IEEE-754 NaN)
 Defined in src/core/math.c -- 450 : 1")
@@ -1463,7 +1473,7 @@ Defined in boot.janet -- 106 : 1")
 (s:> str find)
 
 Slice STR from beginning until FIND
-Defined in boot.janet -- 3929 : 1")
+Defined in boot.janet -- 3961 : 1")
 ("even?" . "FUNCTION
 (even? x)
 
@@ -1484,7 +1494,7 @@ Defined in src/core/tuple.c -- 108 : 1")
 (os/environ)
 
 Get a copy of the os environment table.
-Defined in src/core/os.c -- 1128 : 1")
+Defined in src/core/os.c -- 1118 : 1")
 ("*pretty-format*" . "FUNCTION
 Format specifier for the `pp` function
 Defined in boot.janet -- 1684 : 1")
@@ -1520,7 +1530,7 @@ Defined in boot.janet -- 1620 : 1")
 (os/shell str)
 
 Pass a command string str directly to the system shell.
-Defined in src/core/os.c -- 1109 : 1")
+Defined in src/core/os.c -- 1099 : 1")
 ("fiber/setenv" . "FUNCTION
 (fiber/setenv fiber table)
 
@@ -1577,7 +1587,7 @@ Defined in boot.janet -- 1365 : 1")
 (fst ds)
 
 Gets the first element of DS
-Defined in boot.janet -- 3821 : 1")
+Defined in boot.janet -- 3853 : 1")
 ("gcinterval" . "FUNCTION
 (gcinterval)
 
@@ -1651,12 +1661,12 @@ Defined in boot.janet -- 1175 : 1")
 (os/cd path)
 
 Change current directory to path. Returns nil on success, errors on failure.
-Defined in src/core/os.c -- 1518 : 1")
+Defined in src/core/os.c -- 1508 : 1")
 ("s>*" . "FUNCTION
 (string/find-all patt str &opt start-index)
 
 Searches for all instances of pattern patt in string str. Returns an array of all indices of found patterns. Overlapping instances of the pattern are counted individually, meaning a byte in str may contribute to multiple found patterns.
-Defined in src/core/string.c -- 348 : 1")
+Defined in src/core/string.c -- 350 : 1")
 ("nan?" . "FUNCTION
 (nan? x)
 
@@ -1671,7 +1681,7 @@ Defined in src/core/math.c -- 293 : 1")
 (os/realpath path)
 
 Get the absolute path for a given path, following ../, ./, and symlinks. Returns an absolute path as a string. Will raise an error on Windows.
-Defined in src/core/os.c -- 1943 : 1")
+Defined in src/core/os.c -- 1933 : 1")
 ("arr_" . "FUNCTION
 (array/clear arr)
 
@@ -1691,7 +1701,7 @@ Defined in src/core/marsh.c -- 1496 : 1")
 (s>: str find)
 
 Slice STR from FIND until end
-Defined in boot.janet -- 3934 : 1")
+Defined in boot.janet -- 3966 : 1")
 ("sinh" . "FUNCTION
 (math/sinh x)
 
@@ -1756,7 +1766,7 @@ Defined in src/core/io.c -- 283 : 1")
 (words str)
 
 Split string by any amount of spaces
-Defined in boot.janet -- 3949 : 1")
+Defined in boot.janet -- 3981 : 1")
 ("debug/arg-stack" . "FUNCTION
 (debug/arg-stack fiber)
 
@@ -1771,7 +1781,7 @@ Defined in src/core/io.c -- 653 : 1")
 (os/setenv variable value)
 
 Set an environment variable.
-Defined in src/core/os.c -- 1175 : 1")
+Defined in src/core/os.c -- 1165 : 1")
 ("default" . "MACRO
 (default sym val)
 
@@ -1782,12 +1792,12 @@ Defined in boot.janet -- 168 : 1")
 (is-len? coll len)
 
 Checks if COLL is LEN
-Defined in boot.janet -- 3806 : 1")
+Defined in boot.janet -- 3838 : 1")
 ("os-sleep" . "FUNCTION
 (os/sleep n)
 
 Suspend the program for n seconds. 'nsec' can be a real number. Returns nil.
-Defined in src/core/os.c -- 1220 : 1")
+Defined in src/core/os.c -- 1210 : 1")
 ("syspath" . "FUNCTION
 ")
 ("brshift" . "FUNCTION
@@ -1805,7 +1815,7 @@ Defined in src/core/math.c -- 285 : 1")
 Get the broken down date-struct time expressed as the number  of seconds since January 1, 1970, the Unix epoch. Returns a real number. Date is given in UTC unless local is truthy, in which case the date is computed for the local timezone.
 
 Inverse function to os/date.
-Defined in src/core/os.c -- 1393 : 1")
+Defined in src/core/os.c -- 1383 : 1")
 ("ceil" . "FUNCTION
 (math/ceil x)
 
@@ -1815,12 +1825,12 @@ Defined in src/core/math.c -- 284 : 1")
 (sh-run-cmd & args)
 
 Execute program. Returns output string.
-Defined in boot.janet -- 4008 : 1")
+Defined in boot.janet -- 4044 : 1")
 ("awk-dispatch" . "MACRO
 (awk-dispatch code rawline)
 
 
-Defined in boot.janet -- 3894 : 1")
+Defined in boot.janet -- 3926 : 1")
 ("os-execute" . "FUNCTION
 (os/execute args &opt flags env)
 
@@ -1830,7 +1840,7 @@ Execute a program on the system and pass it string arguments. `flags` is a keywo
 * :x - raise error if exit code is non-zero.
 * :d - Don't try and terminate the process on garbage collection (allow spawning zombies).
 `env` is a table or struct mapping environment variables to values. It can also contain the keys :in, :out, and :err, which allow redirecting stdio in the subprocess. These arguments should be core/file values. One can also pass in the :pipe keyword for these arguments to create files that will read (for :err and :out) or write (for :in) to the file descriptor of the subprocess. This is only useful in `os/spawn`, which takes the same parameters as `os/execute`, but will return an object that contains references to these files via (return-value :in), (return-value :out), and (return-value :err). Returns the exit status of the program.
-Defined in src/core/os.c -- 1063 : 1")
+Defined in src/core/os.c -- 1053 : 1")
 ("compare<" . "FUNCTION
 (compare< & xs)
 
@@ -1861,7 +1871,7 @@ Defined in boot.janet -- 2519 : 1")
 (os/rmdir path)
 
 Delete a directory. The directory must be empty to succeed.
-Defined in src/core/os.c -- 1504 : 1")
+Defined in src/core/os.c -- 1494 : 1")
 ("*executable*" . "FUNCTION
 Name of the interpreter executable used to execute this program. Corresponds to argv[0] in the call to   int main(int argc, char **argv);
 Defined in boot.janet -- 3628 : 1")
@@ -1904,7 +1914,7 @@ Defined in src/core/io.c -- 555 : 1")
 (string/reverse str)
 
 Returns a string that is the reversed version of str.
-Defined in src/core/string.c -- 283 : 1")
+Defined in src/core/string.c -- 285 : 1")
 ("case" . "MACRO
 (case dispatch & pairs)
 
@@ -1926,7 +1936,7 @@ Defined in src/core/table.c -- 340 : 1")
 (os/getenv variable &opt dflt)
 
 Get the string value of an environment variable.
-Defined in src/core/os.c -- 1159 : 1")
+Defined in src/core/os.c -- 1149 : 1")
 ("reverse!" . "FUNCTION
 (reverse! t)
 
@@ -2017,7 +2027,7 @@ Defined in src/core/peg.c -- 1677 : 1")
 (os/time)
 
 Get the current time expressed as the number of whole seconds since January 1, 1970, the Unix epoch. Returns a real number.
-Defined in src/core/os.c -- 1198 : 1")
+Defined in src/core/os.c -- 1188 : 1")
 ("stdout" . "FUNCTION
 The standard output file.
 Defined in src/core/io.c -- 814 : 1")
@@ -2063,7 +2073,7 @@ Defined in src/core/math.c -- 273 : 1")
 (peg>!* patt text)
 
 Get all matching peg text matching PATT in TEXT
-Defined in boot.janet -- 3973 : 1")
+Defined in boot.janet -- 4005 : 1")
 ("brushift" . "FUNCTION
 (brushift x & shifts)
 
@@ -2094,6 +2104,11 @@ Defined in src/core/io.c -- 697 : 1")
 ("stdin" . "FUNCTION
 The standard input file.
 Defined in src/core/io.c -- 822 : 1")
+("json-decode" . "FUNCTION
+(string/trim str &opt set)
+
+Trim leading and trailing whitespace from a byte sequence. If the argument set is provided, consider only characters in set to be whitespace.
+Defined in src/core/string.c -- 1158 : 1")
 ("peg-grammar" . "FUNCTION
 ")
 ("curenv" . "FUNCTION
@@ -2137,7 +2152,7 @@ Defined in boot.janet -- 497 : 1")
 (os/proc-wait proc)
 
 Block until the subprocess completes. Returns the subprocess return code.
-Defined in src/core/os.c -- 547 : 1")
+Defined in src/core/os.c -- 537 : 1")
 ("not" . "FUNCTION
 (not x)
 
@@ -2172,7 +2187,7 @@ Defined in src/core/corelib.c -- 423 : 1")
 (string/has-prefix? pfx str)
 
 Tests whether str starts with pfx.
-Defined in src/core/string.c -- 324 : 1")
+Defined in src/core/string.c -- 326 : 1")
 ("truthy?" . "FUNCTION
 (truthy? x)
 
@@ -2193,7 +2208,7 @@ Defined in src/core/fiber.c -- 644 : 1")
 (string/check-set set str)
 
 Checks that the string str only contains bytes that appear in the string set. Returns true if all bytes in str appear in set, false if some bytes in str do not appear in set.
-Defined in src/core/string.c -- 462 : 1")
+Defined in src/core/string.c -- 464 : 1")
 ("os-which" . "FUNCTION
 (os/which)
 
@@ -2216,12 +2231,12 @@ Check the current operating system. Returns one of:
 * :posix - A POSIX compatible system (default)
 
 May also return a custom keyword specified at build time.
-Defined in src/core/os.c -- 119 : 1")
+Defined in src/core/os.c -- 109 : 1")
 ("$" . "MACRO
 ($ & args)
 
 Entry point to shell macro. Run as shell command if last arg is :
-Defined in boot.janet -- 4027 : 1")
+Defined in boot.janet -- 4061 : 1")
 ("%" . "FUNCTION
 (% dividend divisor)
 
@@ -2312,7 +2327,7 @@ Returns the given time as a date struct, or the current time if `time` is not gi
 * :year-day - day of the year [0-365]
 
 * :dst - if Day Light Savings is in effect
-Defined in src/core/os.c -- 1281 : 1")
+Defined in src/core/os.c -- 1271 : 1")
 ("flatten" . "FUNCTION
 (flatten xs)
 
@@ -2333,7 +2348,7 @@ Defined in src/core/struct.c -- 207 : 1")
 (os/touch path &opt actime modtime)
 
 Update the access time and modification times for a file. By default, sets times to the current time.
-Defined in src/core/os.c -- 1532 : 1")
+Defined in src/core/os.c -- 1522 : 1")
 ("frequencies" . "FUNCTION
 (frequencies ind)
 
@@ -2363,7 +2378,7 @@ Defined in boot.janet -- 714 : 1")
 (tail xs)
 
 Gets all but the first element of XS
-Defined in boot.janet -- 3816 : 1")
+Defined in boot.janet -- 3848 : 1")
 ("os-stat" . "FUNCTION
 (os/stat path &opt tab|key)
 
@@ -2397,7 +2412,7 @@ Gets information about a file or directory. Returns a table if the second argume
 
 * :modified - timestamp when file last modified (content changed)
 
-Defined in src/core/os.c -- 1833 : 1")
+Defined in src/core/os.c -- 1823 : 1")
 ("trunc" . "FUNCTION
 (math/trunc x)
 
@@ -2453,7 +2468,7 @@ Defined in src/core/math.c -- 334 : 1")
 (os/rm path)
 
 Delete a file. Returns nil.
-Defined in src/core/os.c -- 1555 : 1")
+Defined in src/core/os.c -- 1545 : 1")
 ("untrace" . "FUNCTION
 (untrace func)
 
@@ -2483,7 +2498,7 @@ Defined in boot.janet -- 1546 : 1")
 (os/chmod path mode)
 
 Change file permissions, where mode is a permission string as returned by os/perm-string, or an integer as returned by os/perm-int. When mode is an integer, it is interpreted as a Unix permission value, best specified in octal, like 8r666 or 8r400. Windows will not differentiate between user, group, and other permissions, and thus will combine all of these permissions. Returns nil.
-Defined in src/core/os.c -- 1860 : 1")
+Defined in src/core/os.c -- 1850 : 1")
 ("parser/flush" . "FUNCTION
 (parser/flush parser)
 
@@ -2521,7 +2536,7 @@ Defined in boot.janet -- 102 : 1")
 (string/has-suffix? sfx str)
 
 Tests whether str ends with sfx.
-Defined in src/core/string.c -- 335 : 1")
+Defined in src/core/string.c -- 337 : 1")
 ("freeze" . "FUNCTION
 (freeze x)
 
@@ -2555,12 +2570,12 @@ Defined in src/core/corelib.c -- 636 : 1")
 (file-> file-path content)
 
 Dump to file-path a string content
-Defined in boot.janet -- 3859 : 1")
+Defined in boot.janet -- 3891 : 1")
 ("os-cwd" . "FUNCTION
 (os/cwd)
 
 Returns the current working directory.
-Defined in src/core/os.c -- 1241 : 1")
+Defined in src/core/os.c -- 1231 : 1")
 ("*doc-width*" . "FUNCTION
 Width in columns to print documentation printed with `doc-format`
 Defined in boot.janet -- 2871 : 1")
@@ -2586,7 +2601,7 @@ Defined in boot.janet -- 2585 : 1")
 (s>:> str fbeg fend)
 
 Slice STR from FBEG until FEND
-Defined in boot.janet -- 3939 : 1")
+Defined in boot.janet -- 3971 : 1")
 ("symbol?" . "FUNCTION
 (symbol? x)
 
@@ -2621,7 +2636,7 @@ Defined in boot.janet -- 2792 : 1")
 (os/proc-close proc)
 
 Wait on a process if it has not been waited on, and close pipes created by `os/spawn` if they have not been closed. Returns nil.
-Defined in src/core/os.c -- 597 : 1")
+Defined in src/core/os.c -- 587 : 1")
 ("file-read" . "FUNCTION
 (file/read f what &opt buf)
 
@@ -2670,7 +2685,7 @@ Defined in src/core/buffer.c -- 389 : 1")
 (os/clock)
 
 Return the number of whole + fractional seconds since some fixed point in time. The clock is guaranteed to be non decreasing in real time.
-Defined in src/core/os.c -- 1208 : 1")
+Defined in src/core/os.c -- 1198 : 1")
 ("eachk" . "MACRO
 (eachk x ds & body)
 
@@ -2758,7 +2773,7 @@ Defined in src/core/corelib.c -- 374 : 1")
 (idx k ds)
 
 Index k'th item of ds
-Defined in boot.janet -- 3986 : 1")
+Defined in boot.janet -- 4018 : 1")
 ("compare" . "FUNCTION
 (compare x y)
 
@@ -2797,7 +2812,7 @@ Check the ISA that janet was compiled for. Returns one of:
 
 * :unknown
 
-Defined in src/core/os.c -- 157 : 1")
+Defined in src/core/os.c -- 147 : 1")
 ("interleave" . "FUNCTION
 (interleave & cols)
 
@@ -2818,7 +2833,7 @@ Defined in src/core/corelib.c -- 363 : 1")
 
 Like os/stat, but don't follow symlinks.
 
-Defined in src/core/os.c -- 1854 : 1")
+Defined in src/core/os.c -- 1844 : 1")
 ("interpose" . "FUNCTION
 (interpose sep ind)
 
@@ -2844,7 +2859,7 @@ Defined in boot.janet -- 3635 : 1")
 ($* & forms)
 
 Run many shell macros.
-Defined in boot.janet -- 4034 : 1")
+Defined in boot.janet -- 4068 : 1")
 ("resume" . "FUNCTION
 (resume fiber &opt x)
 
@@ -2889,7 +2904,7 @@ Defined in src/core/corelib.c -- 588 : 1")
 (string/replace-all patt subst str)
 
 Replace all instances of patt with subst in the string str. Overlapping matches will not be counted, only the first match in such a span will be replaced. Will return the new string if patt is found, otherwise returns str.
-Defined in src/core/string.c -- 410 : 1")
+Defined in src/core/string.c -- 412 : 1")
 ("module/expand-path" . "FUNCTION
 (module/expand-path path template)
 
@@ -2949,12 +2964,12 @@ Defined in boot.janet -- 151 : 1")
 (awk data file)
 
 Execute actions on every line of a file (object).First arg is a table, key is a peg and value is a single form to be run on everyline that the peg matches. Forms have access to several variables:line: trimmed linewds: line split by whitespacewdsn: words of the line, all converted to numbersf: a function to get the nth field of the linen: a function to get the nth field of the line, as a numberNF: number of fields_<number>: shorthand for (f <number>)
-Defined in boot.janet -- 3906 : 1")
+Defined in boot.janet -- 3938 : 1")
 ("s-from-bytes" . "FUNCTION
 (string/from-bytes & byte-vals)
 
 Creates a string from integer parameters with byte values. All integers will be coerced to the range of 1 byte 0-255.
-Defined in src/core/string.c -- 232 : 1")
+Defined in src/core/string.c -- 234 : 1")
 ("peg/>" . "FUNCTION
 (peg/replace peg repl text &opt start & args)
 
@@ -2968,12 +2983,12 @@ Returns the bit-wise inverse of integer x.")
 (os/cryptorand n &opt buf)
 
 Get or append n bytes of good quality random data provided by the OS. Returns a new buffer or buf.
-Defined in src/core/os.c -- 1257 : 1")
+Defined in src/core/os.c -- 1247 : 1")
 ("os-spawn" . "FUNCTION
 (os/spawn args &opt flags env)
 
 Execute a program on the system and return a handle to the process. Otherwise, the same arguments as os/execute. Does not wait for the process. The returned value has the fields :in, :out, :err, :return-code and the additional field :pid on unix like platforms.
-Defined in src/core/os.c -- 1085 : 1")
+Defined in src/core/os.c -- 1075 : 1")
 ("loop" . "MACRO
 (loop head & body)
 
@@ -3046,7 +3061,7 @@ Defined in src/core/math.c -- 265 : 1")
 (os/symlink oldpath newpath)
 
 Create a symlink from oldpath to newpath, returning nil. Same as (os/link oldpath newpath true).
-Defined in src/core/os.c -- 1467 : 1")
+Defined in src/core/os.c -- 1457 : 1")
 ("buffer?" . "FUNCTION
 (buffer? x)
 
@@ -3105,7 +3120,7 @@ Defined in boot.janet -- 702 : 1")
 (string/format format & values)
 
 Similar to snprintf, but specialized for operating with Janet values. Returns a new string.
-Defined in src/core/string.c -- 531 : 1")
+Defined in src/core/string.c -- 533 : 1")
 ("fiber-fn" . "MACRO
 (fiber-fn flags & body)
 
@@ -3115,7 +3130,7 @@ Defined in boot.janet -- 609 : 1")
 (flip f)
 
 Return a new function with the args flipped
-Defined in boot.janet -- 3980 : 1")
+Defined in boot.janet -- 4012 : 1")
 ("trace" . "FUNCTION
 (trace func)
 
@@ -3217,7 +3232,7 @@ Defined in src/core/math.c -- 288 : 1")
 (file+ file-path content)
 
 Append to file-path a string content
-Defined in boot.janet -- 3866 : 1")
+Defined in boot.janet -- 3898 : 1")
 ("generate" . "MACRO
 (generate head & body)
 
@@ -3249,4 +3264,4 @@ Defined in boot.janet -- 145 : 1")
 
 Read the contents of a symbolic link. Does not work on Windows.
 
-Defined in src/core/os.c -- 1566 : 1")))
+Defined in src/core/os.c -- 1556 : 1")))

@@ -28,13 +28,14 @@
 + file+ :: file append and close
 + file-each-line :: takes file pointer f and a list of forms, executes
   all forms on every line of the file.
-+ awk :: accepts a table of actions and a file name (string). Table
++ awk-file :: accepts a table of actions and a file name (string) or file. Table
   should have PEGs as keys and a single form as a value. Form is run
   on every line of the file that matches the PEG, results are
   collected and returned as an array. The form has access to NF (num
   fields), the function f which gets a field (shorthand _), n which gets a field and
   reads it as a number, wds a list of words, wdsn a list of words as
   numbers, and finally line which is the line after trimming.
++ awk :: uses awk-file on stdin. meant for cli usage, no need to quote table.
 ** Collections
 + head, tail functions
 + idx :: get with flipped arguments. supports negative indexing
@@ -53,6 +54,8 @@
 ** Misc
 - improved ->> :: Prefixing any threaded form with * flips the arg
   order of the function.
+- id :: return arg
+- m cli option :: run a string of janet code, expose ipt as stdin text.
 * Renaming
 ** Arrays
 - array/new :: arr-new

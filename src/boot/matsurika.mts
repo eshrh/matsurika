@@ -6,6 +6,11 @@
 ###
 
 ## String ops
+
+(defmacro s-in?
+  [patt str]
+  ~(truthy? (s> patt str)))
+
 (defmacro s:>
   "Slice STR from beginning until FIND"
   [str find]

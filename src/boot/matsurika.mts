@@ -222,57 +222,62 @@ _<number>: shorthand for (f <number>)"
     (get ds (+ (length ds) k))))
 
 ## Shell commands
-(defun- sh--get-cmd [fst args]
-  (map id (list-replace (fn [el] (s-prefix? "$" el))
-                        (fn [el] (->> (s: el 1) (symbol) (eval) (string)))
-                        (if (tuple? fst)
-                          (map string fst)
-                          (map string args)))))
 
-(defmacro sh-run
+
+(defun sh-run
   "Run as shell command. Prints output, returns stat"
   [& args]
   (def fst (get args 0))
-  ~(os-shell ,(s-join (sh--get-cmd fst args) " ")))
+  (os-shell (s-join (if (tuple? fst)
+                      (map string fst)
+                      (map string args)) " ")))
 
 (defmacro sh-run-do
-  "Run multiple forms as shell commands"
-  [& forms]
-  ~(do ,;(map sh-run forms)))
+  "Execute multiple programs"
+  [forms]
+  ~(map (fn [el] (apply sh-run el)) ,forms))
 
-(defmacro sh-run-cmd
+(defun sh-run-cmd
   "Execute program. Returns output string."
   [& args]
   (let [fst (get args 0)
-        cmd (sh--get-cmd fst args)]
-    ~(lines (do
+        cmd (if (tuple? fst)
+              (map string fst)
+              (map string args))]
+    (lines (do
              (def p
-                  (os-spawn ,cmd :p {:in :pipe :out :pipe}))
+               (os-spawn cmd
+                         :p {:in :pipe :out :pipe}))
              (:wait p)
              (:read (p :out) :all)))))
 
 (defmacro sh-run-cmd-do
   "Execute multiple programs"
-  [& forms]
-  (def forms (map sh-run-cmd forms))
-  ~(map eval ,forms))
+  [forms]
+  ~(map (fn [el] (apply sh-run-cmd el)) ,forms))
+
+(defun- sh-get-syms [li]
+  (list-replace (fn [el] (s-prefix? "$" el))
+                (fn [el] (->> (s: el 1) (symbol)))
+                (map string li)))
 
 (defmacro $
   "Entry point to shell macro. Run as shell command if last arg is :"
   [& args]
   (if (= (last args) :sh)
-    ~(sh-run ,(head args))
-    ~(sh-run-cmd ,args)))
+    ~(sh-run ,;(sh-get-syms (head args)))
+    ~(sh-run-cmd ,;(sh-get-syms args))))
 
 (defmacro $*
   "Run many shell macros."
   [& forms]
   (let [lastform (last forms)]
     (if (and
-          (not (tuple? lastform))
-          (= lastform :sh))
-      ~(sh-run-do ,;(head forms))
-      ~(sh-run-cmd-do ,;forms))))
+         (not (tuple? lastform))
+         (= lastform :sh))
+      ## ~(sh-run-do ,;(map sh-get-syms (head forms)))
+      ~(sh-run-do ,(map (partial map id) (map sh-get-syms (head forms))))
+      ~(sh-run-cmd-do ,(map (partial map id) (map sh-get-syms forms))))))
 
 ## cli stuff
 

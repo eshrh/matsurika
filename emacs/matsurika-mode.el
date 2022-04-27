@@ -200,6 +200,7 @@ the syntax table, so `forward-word' works as expected.")
     (meta (format (gethash arg mts-ht)))))
 
 (defun matsurika--set-indent ()
+  (interactive)
   (put 'if 'lisp-indent-function 2))
 
 (defun matsurika-mode-get-docs ()
@@ -211,6 +212,9 @@ the syntax table, so `forward-word' works as expected.")
   (let ((map (make-keymap)))
     (define-key map (kbd "C-c C-d") #'matsurika-mode-get-docs)
     map))
+
+(unless (boundp 'mts-ht)
+  (matsurika--generate-builtin-ht))
 
 ;;;###autoload
 (define-derived-mode matsurika-mode clojure-mode "matsurika"
@@ -224,9 +228,7 @@ the syntax table, so `forward-word' works as expected.")
   (setq-local imenu-generic-expression matsurika-imenu-generic-expression)
   (matsurika--set-indent)
   (add-to-list 'company-backends #'company-matsurika-builtins)
-  (use-local-map matsurika-mode-map)
-  (unless (boundp 'mts-ht)
-    (matsurika--generate-builtin-ht)))
+  (use-local-map matsurika-mode-map))
 
 
 ;;;###autoload

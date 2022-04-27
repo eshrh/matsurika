@@ -9,7 +9,7 @@
 
 (defmacro s-in?
   [patt str]
-  ~(truthy? (s> patt str)))
+  ~(truthy? (s> ,patt ,str)))
 
 (defmacro s:>
   "Slice STR from beginning until FIND"
@@ -37,6 +37,10 @@
   (filter |(not (empty? $))
           (map s// (s/ " " str))))
 
+(defmacro letters
+  [str]
+  ~(map s-from-bytes ,str))
+
 (defmacro s+
   "Concat strings with extra vars.
 Variables:
@@ -53,8 +57,11 @@ s - space"
          s " "]
      (string ,;strings)))
 
-## Other
+## Other, functional things
 (defun id (x) x)
+
+(defun const [f]
+  (fn [x] (f)))
 
 (defun is-len?
   "Checks if COLL is LEN"

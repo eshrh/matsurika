@@ -125,7 +125,7 @@ Janet janet_array_peek(JanetArray *array) {
 JANET_CORE_FN(cfun_array_new,
               "(array/new capacity)",
               "Creates a new empty array with a pre-allocated capacity. The same as "
-              "(array) but can be more efficient if the maximum size of an array is known.") {
+              "`(array)` but can be more efficient if the maximum size of an array is known.") {
     janet_fixarity(argc, 1);
     int32_t cap = janet_getinteger(argv, 0);
     JanetArray *array = janet_array(cap);
@@ -137,6 +137,7 @@ JANET_CORE_FN(cfun_array_new_filled,
               "Creates a new array of `count` elements, all set to `value`, which defaults to nil. Returns the new array.") {
     janet_arity(argc, 1, 2);
     int32_t count = janet_getinteger(argv, 0);
+    if (count < 0) janet_panic("expected positive integer");
     Janet x = (argc == 2) ? argv[1] : janet_wrap_nil();
     JanetArray *array = janet_array(count);
     for (int32_t i = 0; i < count; i++) {
@@ -194,7 +195,7 @@ JANET_CORE_FN(cfun_array_push,
 JANET_CORE_FN(cfun_array_ensure,
               "(array/ensure arr capacity growth)",
               "Ensures that the memory backing the array is large enough for `capacity` "
-              "items at the given rate of growth. Capacity and growth must be integers. "
+              "items at the given rate of growth. `capacity` and `growth` must be integers. "
               "If the backing capacity is already enough, then this function does nothing. "
               "Otherwise, the backing memory will be reallocated so that there is enough space.") {
     janet_fixarity(argc, 3);

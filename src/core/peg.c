@@ -293,6 +293,7 @@ tail:
                     if (rule[0] == RULE_TO) cap_load(s, cs2);
                     break;
                 }
+                cap_load(s, cs2);
                 text++;
             }
             up1(s);

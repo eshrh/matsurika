@@ -283,5 +283,6 @@ _<number>: shorthand for (f <number>)"
 
 (defmacro cli
   [& forms]
-  ~(defun main [& args]
-     ,;forms))
+  ~(defun main [& args-raw]
+     (let [args (tail args-raw)]
+       ,;forms)))

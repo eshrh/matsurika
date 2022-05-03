@@ -29,7 +29,7 @@ BINDIR?=$(PREFIX)/bin
 LIBDIR?=$(PREFIX)/lib
 JANET_BUILD?="\"$(shell git log --pretty=format:'%h' -n 1 2> /dev/null || echo local)\""
 CLIBS=-lm -lpthread
-JANET_TARGET=build/matsurika
+JANET_TARGET=build/mts
 JANET_LIBRARY=build/libjanet.so
 JANET_STATIC_LIBRARY=build/libjanet.a
 JANET_PATH?=$(LIBDIR)/janet
@@ -279,7 +279,7 @@ build/janet.pc: $(JANET_TARGET)
 
 install: $(JANET_TARGET) $(JANET_LIBRARY) $(JANET_STATIC_LIBRARY) build/janet.pc build/janet.h
 	mkdir -p '$(DESTDIR)$(BINDIR)'
-	cp $(JANET_TARGET) '$(DESTDIR)$(BINDIR)/matsurika'
+	cp $(JANET_TARGET) '$(DESTDIR)$(BINDIR)/mts'
 	mkdir -p '$(DESTDIR)$(INCLUDEDIR)/janet'
 	cp -r build/janet.h '$(DESTDIR)$(INCLUDEDIR)/janet'
 	mkdir -p '$(DESTDIR)$(JANET_PATH)'
@@ -313,7 +313,7 @@ install-jpm-git: $(JANET_TARGET)
 		../../$(JANET_TARGET) ./bootstrap.janet
 
 uninstall:
-	-rm '$(DESTDIR)$(BINDIR)/matsurika'
+	-rm '$(DESTDIR)$(BINDIR)/mts'
 	-rm -rf '$(DESTDIR)$(INCLUDEDIR)/janet'
 	-rm -rf '$(DESTDIR)$(LIBDIR)'/libjanet.*
 	-rm '$(DESTDIR)$(JANET_PKG_CONFIG_PATH)/janet.pc'

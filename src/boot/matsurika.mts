@@ -1,9 +1,101 @@
-
 ###
 ###
 ### MATSURIKA
 ###
 ###
+
+## Other, functional things
+(defun id (x) x)
+
+(defun flip
+  "Return a new function with the args flipped"
+  [f]
+  (fn [& args]
+      (apply f (reverse args))))
+
+(defun idx
+  "Index k'th item of ds"
+  [k ds]
+  (if (<= 0 k)
+      (get ds k)
+    (get ds (+ (length ds) k))))
+
+(defun const [f]
+  (fn [x] (f)))
+
+(defun is-len?
+  "Checks if COLL is LEN"
+  [coll len]
+  (= (length coll) len))
+
+(defun head
+  "Gets all but the last element of XS"
+  [xs]
+  (take (- (length xs) 1) xs))
+
+(defun tail
+  "Gets all but the first element of XS"
+  [xs]
+  (drop 1 xs))
+
+(defun fst
+  "Gets the first element of DS"
+  [ds]
+  (first ds))
+
+(defun snd
+  "Gets the second element of DS"
+  [ds]
+  (get ds 1))
+
+(defun thread-flip [form]
+  ~((flip ,(fst form)) ,;(tail form)))
+
+(defmacro ->>
+  [x & forms]
+  (var formsmut @[])
+  (var i 0)
+  (while (< i (length forms))
+    (let [cur (get forms i)]
+      (if (= '* cur)
+        (do
+          (arr<- formsmut
+                 (thread-flip (get forms (inc i))))
+          (+= i 2))
+        (do
+          (arr<- formsmut cur)
+          (+= i 1)))))
+  ~(thread-last ,x ,;formsmut))
+
+(defmacro mapf
+  [form li]
+  ~(map (fn [el] ,form) ,li))
+
+(defmacro nullary
+  [& forms]
+  ~(fn [] ,;forms))
+
+(defmacro -<
+  [x & forms]
+  (map (fn [form]
+         ~(,(first form) ,x ,;(tail form)))
+       forms))
+
+(defmacro -<<
+  [x & forms]
+  (map (fn [form]
+         ~(,(first form) ,;(tail form) ,x))
+       forms))
+
+(defun funcn
+  "Apply function F to indexable XS at index N"
+  [f n xs]
+  @[;(take n xs) (f (idx n xs)) ;(drop (inc n) xs)])
+
+(defun bifunc1 [f xs] (funcn f 0 xs))
+(defun bifunc2 [f xs] (funcn f 1 xs))
+
+## File reading functions
 
 ## String ops
 
@@ -57,57 +149,30 @@ s - space"
          s " "]
      (string ,;strings)))
 
-## Other, functional things
-(defun id (x) x)
+(defun s-break
+  "partition STR at index X"
+  [x str]
+  (-< x (take str) (drop str)))
 
-(defun const [f]
-  (fn [x] (f)))
+(defun s->/
+  "Left partition STR on PATT"
+  [patt str]
+  (->> str
+       (s-break (s> patt str))
+       (bifunc2 tail)))
 
-(defun is-len?
-  "Checks if COLL is LEN"
-  [coll len]
-  (= (length coll) len))
+(defun s/<-
+  "Right partition STR on PATT"
+  [patt str]
+  (->> str
+       (s-break (->> str s<-> (s> patt) (- (length str))))
+       (bifunc1 head)))
 
-(defun head
-  "Gets all but the last element of XS"
-  [xs]
-  (take (- (length xs) 1) xs))
+(defun basename
+  [str]
+  (->> str (s/<- ".") (fst) (s->/ "/") (snd)))
 
-(defun tail
-  "Gets all but the first element of XS"
-  [xs]
-  (drop 1 xs))
-
-(defun fst
-  "Gets the first element of DS"
-  [ds]
-  (first ds))
-
-(defun snd
-  "Gets the second element of DS"
-  [ds]
-  (get ds 1))
-
-(defun thread-flip [form]
-  ~((flip ,(fst form)) ,;(tail form)))
-
-(defmacro ->>
-  [x & forms]
-  (var formsmut @[])
-  (var i 0)
-  (while (< i (length forms))
-    (let [cur (get forms i)]
-      (if (= '* cur)
-        (do
-          (arr<- formsmut
-                 (thread-flip (get forms (inc i))))
-          (+= i 2))
-        (do
-          (arr<- formsmut cur)
-          (+= i 1)))))
-  ~(thread-last ,x ,;formsmut))
-
-## File reading functions
+## File operations
 
 (defun file<-
   "Read all the data of a file, return a string"
@@ -145,12 +210,16 @@ line contains line as string."
   "Replace all elements of a tuple. PRED is a predicate that if t
 decides to replace the element. TO-FUNC is a function that returns what to replace
 the element with. Both functions take a single argument, the element."
-  [pred to-func form]
-  (tuple ;(map (fn [el]
-                 (cond (pred el) (to-func el)
-                       (tuple? el) (list-replace pred to-func el)
-                       el))
-               form)))
+  [pred to-func form & flat]
+  (def flat (fst flat))
+  (def replaced (tuple ;(map (fn [el]
+                               (cond (pred el) (to-func el)
+                                     (tuple? el) (list-replace pred to-func el)
+                                     el))
+                             form)))
+  (if (truthy? flat)
+    (tuple ;(flatten replaced))
+    replaced))
 
 (defmacro awk-dispatch [code rawline]
   (def code (list-replace (fn [el] (s-prefix? "_" (string el)))
@@ -206,31 +275,17 @@ _<number>: shorthand for (f <number>)"
   [patt text]
   ~(map |(peg>! ,patt ,text $) (peg>* ,patt ,text)))
 
-## Flipped indexing
-
-(defun flip
-  "Return a new function with the args flipped"
-  [f]
-  (fn [& args]
-      (apply f (reverse args))))
-
-(defun idx
-  "Index k'th item of ds"
-  [k ds]
-  (if (pos? k)
-      (get ds k)
-    (get ds (+ (length ds) k))))
-
 ## Shell commands
-
 
 (defun sh-run
   "Run as shell command. Prints output, returns stat"
   [& args]
   (def fst (get args 0))
-  (os-shell (s-join (if (tuple? fst)
-                      (map string fst)
-                      (map string args)) " ")))
+  (def sh (if (tuple? fst) fst args))
+  (def shell-string
+    (s/>* " NOSPC " "" (s-join (map string sh) " ")))
+  (pp shell-string)
+  (os-shell shell-string))
 
 (defmacro sh-run-do
   "Execute multiple programs"
@@ -256,9 +311,11 @@ _<number>: shorthand for (f <number>)"
   [forms]
   ~(map (fn [el] (apply sh-run-cmd el)) ,forms))
 
-(defun- sh-get-syms [li]
+(defun sh-get-syms [li]
   (list-replace (fn [el] (s-prefix? "$" el))
-                (fn [el] (->> (s: el 1) (symbol)))
+                (fn [el] (if (= "$<>" (string el))
+                           "NOSPC"
+                           ~(s+ qt (string ,(->> (s: el 1) (symbol))) qt)))
                 (map string li)))
 
 (defmacro $

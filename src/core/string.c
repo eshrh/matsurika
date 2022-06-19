@@ -1181,7 +1181,7 @@ void janet_lib_string(JanetTable *env) {
         JANET_CORE_REG("s-from-bytes", cfun_string_frombytes),
         JANET_CORE_REG("s_", cfun_string_asciilower),
         JANET_CORE_REG("s^", cfun_string_asciiupper),
-        JANET_CORE_REG("s>-<", cfun_string_reverse),
+        JANET_CORE_REG("s<->", cfun_string_reverse),
         JANET_CORE_REG("s>", cfun_string_find),
         JANET_CORE_REG("s>*", cfun_string_findall),
         JANET_CORE_REG("s-prefix?", cfun_string_hasprefix),

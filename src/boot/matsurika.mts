@@ -20,8 +20,8 @@
       (get ds k)
     (get ds (+ (length ds) k))))
 
-(defun const [f]
-  (fn [x] (f)))
+(defmacro const [f]
+  ~(fn [& x] ,f))
 
 (defun is-len?
   "Checks if COLL is LEN"
@@ -170,7 +170,7 @@ s - space"
 
 (defun basename
   [str]
-  (->> str (s/<- ".") (fst) (s->/ "/") (snd)))
+  (->> str (s/<- ".") (fst) (s/<- "/") (snd)))
 
 ## File operations
 
@@ -311,19 +311,21 @@ _<number>: shorthand for (f <number>)"
   [forms]
   ~(map (fn [el] (apply sh-run-cmd el)) ,forms))
 
-(defun sh-get-syms [li]
+(defun sh-get-syms [li quot]
   (list-replace (fn [el] (s-prefix? "$" el))
                 (fn [el] (if (= "$<>" (string el))
                            "NOSPC"
-                           ~(s+ qt (string ,(->> (s: el 1) (symbol))) qt)))
+                           (if quot
+                             ~(s+ qt (string ,(->> (s: el 1) (symbol))) qt)
+                             (->> (s: el 1) (symbol)) )))
                 (map string li)))
 
 (defmacro $
   "Entry point to shell macro. Run as shell command if last arg is :"
   [& args]
   (if (= (last args) :sh)
-    ~(sh-run ,;(sh-get-syms (head args)))
-    ~(sh-run-cmd ,;(sh-get-syms args))))
+    ~(sh-run ,;(sh-get-syms (head args) true))
+    ~(sh-run-cmd ,;(sh-get-syms args nil))))
 
 (defmacro $*
   "Run many shell macros."
@@ -343,3 +345,10 @@ _<number>: shorthand for (f <number>)"
   ~(defun main [& args-raw]
      (let [args (tail args-raw)]
        ,;forms)))
+
+
+## math macros
+
+(defmacro //
+  [a b]
+  ~(floor (/ ,a ,b)))

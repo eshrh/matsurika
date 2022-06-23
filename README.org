@@ -19,6 +19,40 @@ advantage of having a single binary for portability; at the
 disadvantage that I need to manually pull in important changes from
 upstream once in a while.
 
+Principles
+1. use functional structures like higher order functions, composition,
+   lambdas, etc
+2. drop the functional baggage required to deal with statefulness
+3. provide a flexible facility to shell out to other programs
+4. provide a rich library of functional list and string processing
+   tools
+5. **be as concise as possible!**
+
+For instance, here's an example script that looks in the current
+dictionary, finds every `.mkv` file, finds its runtime by parsing the
+output of `mediainfo`, sums them up and then prints a total runtime.
+
+#+BEGIN_SRC clojure
+(def files (->> ($ ls) (filter |(s-suffix? ".mkv" $))))
+(def ans
+  (reduce
+   (fn [ac file]
+     (let [line (->> ($ mediainfo $file)
+                     (find |(s-prefix? "Duration" $))) # Duration : XX min XX sec
+           [min sec] (-< (->> line (s->/ ":") (snd) (s/ " ") (map s->n))
+                         (get 1)
+                         (get 3))]
+       (+ ac (* 60 min) sec))) 0 files))
+(pp (/ ans 3600))
+#+END_SRC
+
+If this is unreadable to you, then i 100% agree.
+
+Everything in this fork is centered around concision and versatility,
+for example, it inclueds a powerful awk macro implemented using
+Janet's PEG system that lets you map arbitrary actions onto arbitrary
+matching PEGs.
+
 The emacs directory contains some extra tooling. It includes a
 matsurika program to generate elisp readable docs which can then be
 used by matsurika-mode.el to provide autocompletion via company and

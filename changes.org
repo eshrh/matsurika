@@ -19,6 +19,9 @@
   nil.
 + For either of the previous two commands, any item beginning with the
   "$" character is evaluated literally.
++ cli :: small macro that wraps any number of lisp forms in a main
+  function and exposes an array called `args` that contains the
+  command line arguments. Included to make writing scripts more concise.
 ** Predicates
 + is-len? :: checks if collection is length
 + hasone? :: coll has exactly one element
@@ -31,30 +34,60 @@
 + awk-file :: accepts a table of actions and a file name (string) or file. Table
   should have PEGs as keys and a single form as a value. Form is run
   on every line of the file that matches the PEG, results are
-  collected and returned as an array. The form has access to NF (num
-  fields), the function f which gets a field (shorthand _), n which gets a field and
-  reads it as a number, wds a list of words, wdsn a list of words as
-  numbers, and finally line which is the line after trimming.
-+ awk :: uses awk-file on stdin. meant for cli usage, no need to quote table.
-** Collections
+  collected and returned as an array. The form has access to
+  - NF (num fields)
+  - a function f which gets a field (shorthand _),
+  - a function n which gets a field and reads it as a number,
+  - wds a list of words
+  - wdsn a list of words as numbers
+  - line which is the line after trimming.
++ awk :: uses awk-file on stdin. meant for cli usage, no need to quote
+  table.
++ awk-str :: same as awk-file but takes a string as second argument.
+** Collections and functional stuff
 + head, tail functions
 + idx :: get with flipped arguments. supports negative indexing
++ flip :: reverse the order of arguments of a function
 + fst :: first
 + snd :: second
++ id :: return arg
++ mapf :: accepts a lisp form in place of a function and inserts it
+  into a nullary lambda.
++ nullary :: accepts a lisp form and inserts it into a nullary lambda
+  (so, it returns a function with no arguments that just runs your
+  code.)
++ funcn :: applies a function f to collection at an index
++ bifunc1 :: applies a function to the first element of
+  something. shorthand for a common application of funcn
++ bifunc2 :: same thing, pretty much.
+*** Arrow improvements
+- improved ->> :: Prefixing any threaded form with * flips the arg
+  order of the function.
+- -< and -<< :: Furculas from [[https://github.com/rplevy/swiss-arrows][swiss-arrows by rplevy]]. New syntactic
+  structure to capture the structure of branching data-passing. See
+  the implementation of s-break for an example in the source.
 ** Strings
 + s:> :: slice from beginning of string until find (excluding find)
 + s>: :: slice from find (including find) until the end of string
 + s>:> :: slice from second arg to third arg in first arg
 + lines :: split by \n
 + words :: split by whitespace
-+ s+ :: concat strings with extra shorthand variables
++ s+ :: concat strings with extra shorthand variables, namely
+  - qt for the escaped double quote, because it's a PITA to type in
+    lisp
+  - sqt for single quote
+  - nl for escaped new line
+  - tb for escaped tab character
+  - s for space
++ s-break :: partition a string into an array of two strings at an
+  index
++ s->/ :: equivalent to python's partition function
++ s/<- :: equavalent to python's rpartition function
++ basename :: strips path and file extension from a string
 ** PEG
 - peg>!* :: peg match all
 - extra default patterns :: (any) forms for S W A D H.
 ** Misc
-- improved ->> :: Prefixing any threaded form with * flips the arg
-  order of the function.
-- id :: return arg
 - m cli option :: run a string of janet code, expose ipt as stdin text.
 * Renaming
 ** Arrays

@@ -31,12 +31,12 @@
   (let ((table (make-syntax-table clojure-mode-syntax-table)))
     (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?\n ">" table)
-    
+
     (modify-syntax-entry ?: "_" table)
     (modify-syntax-entry ?` "\"" table)
 
     (modify-syntax-entry ?| "_")
-    
+
     (modify-syntax-entry ?? "_" table)
     (modify-syntax-entry ?! "_" table)
     (modify-syntax-entry ?. "_" table)
@@ -46,7 +46,7 @@
 
     (modify-syntax-entry ?\{ "(}")
     (modify-syntax-entry ?\} "){")
-    
+
     table))
 
 (defconst matsurika-symbol '(one-or-more (or (syntax word) (syntax symbol)))
@@ -121,6 +121,8 @@ the syntax table, so `forward-word' works as expected.")
     "-?>>"
     "as->"
     "as?->"
+    "-<"
+    "-<<"
     "break"
     "cond"
     "coro"
@@ -157,7 +159,7 @@ the syntax table, so `forward-word' works as expected.")
     "with-vars"
     "$"
     "$*"
-    
+
     ,@matsurika-var-decl-forms
     ,@matsurika-function-decl-forms)
   "List of Matsurika special forms."

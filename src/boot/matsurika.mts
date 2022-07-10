@@ -311,7 +311,7 @@ _<number>: shorthand for (f <number>)"
   [forms]
   ~(map (fn [el] (apply sh-run-cmd el)) ,forms))
 
-(defun sh-get-syms [li quot]
+(defun sh-get-syms [li &opt quot]
   (list-replace (fn [el] (s-prefix? "$" el))
                 (fn [el] (if (= "$<>" (string el))
                            "NOSPC"

@@ -7,6 +7,10 @@
 ## Other, functional things
 (defun id (x) x)
 
+(defmacro mapp [f tab]
+  "map pairs of kv on table TAB. F takes two arguments, key and value."
+  ~(map (fn [p] (,f ;p)) (pairs ,tab)))
+
 (defun flip
   "Return a new function with the args flipped"
   [f]
@@ -99,6 +103,11 @@
 
 ## String ops
 
+(defun input [prompt]
+  "Python style input. Trims automatically."
+  (print prompt)
+  (->> (getline) (s//)))
+
 (defmacro s-in?
   [patt str]
   ~(truthy? (s> ,patt ,str)))
@@ -170,7 +179,10 @@ s - space"
 
 (defun basename
   [str]
-  (->> str (s/<- ".") (fst) (s/<- "/") (snd)))
+  (def dropped_dot (->> str (s/<- ".") (fst)))
+  (if (s-in? "/" dropped_dot)
+    (->> dropped_dot (s/<- "/") (snd))
+    dropped_dot))
 
 ## File operations
 
@@ -352,3 +364,37 @@ _<number>: shorthand for (f <number>)"
 (defmacro //
   [a b]
   ~(floor (/ ,a ,b)))
+
+## html generation
+
+(defun html-format-params [params]
+  (def prefix (if (empty? params) "" " "))
+  (string prefix
+          (s-join (mapp (fn [k v] (string k "=" "\"" v "\""))
+                        params) " ")))
+(defun html
+  "Generate html via lisp. Form is a either an object or a tuple.
+
+First item is tag name. If exactly one element, the tag is immediately closed.
+Second item is parameters. Should be in table format, :keyword : value.
+If exactly two elements, then assume no parameters.
+This is followed by any number of content items which are each forms."
+  [form]
+  (if (tuple? form)
+    (if (not (tuple? (fst form)))
+      (case (length form)
+        1 (string "<" (fst form) ">")
+        2 (let [tag (fst form)
+                content (html (snd form))]
+            (string "<" tag ">" "\n" content "\n</" tag ">"))
+        3 (let [tag (fst form)
+                params (html-format-params (snd form))
+                content (html (last form))]
+            (string "<" tag params ">" "\n" content "\n</" tag ">"))
+        (let [tag (fst form)
+              params (html-format-params (snd form))
+              content (s-join (map html (arr: form 2 -1)) "\n")]
+            (string "<" tag params ">" "\n" content "\n</" tag ">"))
+        )
+      (s-join (map html form) "\n"))
+    form))

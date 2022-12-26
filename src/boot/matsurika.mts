@@ -386,15 +386,16 @@ This is followed by any number of content items which are each forms."
         1 (string "<" (fst form) ">")
         2 (let [tag (fst form)
                 content (html (snd form))]
-            (string "<" tag ">" "\n" content "\n</" tag ">"))
+            (string "<" tag ">" "" content "</" tag ">"))
         3 (let [tag (fst form)
                 params (html-format-params (snd form))
                 content (html (last form))]
-            (string "<" tag params ">" "\n" content "\n</" tag ">"))
+            (string "<" tag params ">"
+                    (unless (= :noclose content)
+                            (string content "</" tag ">"))))
         (let [tag (fst form)
               params (html-format-params (snd form))
-              content (s-join (map html (arr: form 2 -1)) "\n")]
-            (string "<" tag params ">" "\n" content "\n</" tag ">"))
-        )
-      (s-join (map html form) "\n"))
+              content (s-join (map html (arr: form 2 -1)))]
+            (string "<" tag params ">" content "</" tag ">")))
+      (s-join (map html form)))
     form))
